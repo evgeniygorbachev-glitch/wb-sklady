@@ -53,12 +53,12 @@ svg{width:100%;height:auto;display:block}
 <body>
 <div class="wrap">
   <h1>Склады Wildberries — интерактивная карта</h1>
-  <p class="sub">Фулфилмент-центры и СЦ по России и СНГ · данные на 4 августа 2026</p>
+  <p class="sub">Фулфилмент-центры и СЦ по России и СНГ · данные на 5 августа 2026</p>
 
   <div class="kpis">
     <div class="kpi"><div class="l">Сеть сейчас (RWB, II кв. 2026)</div><div class="v">5,6 <small>млн м², 209 объектов</small></div></div>
     <div class="kpi"><div class="l">План к концу 2026</div><div class="v">6,9 <small>млн м² (+1,7)</small></div></div>
-    <div class="kpi"><div class="l">Выбыло (БПЛА)</div><div class="v" style="color:var(--red)">~1,3 <small>млн м² · ≈23%</small></div></div>
+    <div class="kpi"><div class="l">Выбыло (БПЛА)</div><div class="v" style="color:var(--red)">~1,6 <small>млн м² · ≈29%</small></div></div>
     <div class="kpi"><div class="l">Раскрытые (работают + выбыли) · РФ / СНГ</div><div class="v">3,2 / 0,3 <small>млн м²</small></div></div>
   </div>
 
@@ -108,12 +108,12 @@ svg{width:100%;height:auto;display:block}
         <div class="row"><span class="nm">11. Самара, 02.08</span><span class="ar">128</span></div>
         <div class="row"><span class="nm">12. Владимир, 03.08</span><span class="ar">128</span></div>
         <div class="row"><span class="nm">13. Красный Бор, 04.08 (1 блок)</span><span class="ar">20</span></div>
-        <div class="row tot"><span class="nm">Итого · 12 объектов + 1 блок</span><span class="ar">~1320</span></div>
+        <div class="row"><span class="nm">14. Алексин · Тула, 05.08</span><span class="ar">300</span></div>
+        <div class="row tot"><span class="nm">Итого · 13 объектов + 1 блок</span><span class="ar">~1620</span></div>
       </div>
       <div class="col" style="grid-column:span 2">
         <h3 style="color:var(--green)">Работают и частично · введено / итог</h3>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 18px">
-          <div class="row"><span class="nm">Алексин · Тула</span><span class="ar">300</span></div>
           <div class="row"><span class="nm">Екатеринбург</span><span class="ar">158/230</span></div>
           <div class="row"><span class="nm">Коледино</span><span class="ar">200+</span></div>
           <div class="row"><span class="nm">Красноярск</span><span class="ar">41/200</span></div>
@@ -141,7 +141,7 @@ svg{width:100%;height:auto;display:block}
           <div class="row"><span class="nm">Мытищи</span><span class="ar">н/д</span></div>
           <div class="row"><span class="nm">Дзержинский</span><span class="ar">н/д</span></div>
         </div>
-        <div class="row tot"><span class="nm">Итого · введено / итог (по объектам с цифрами)</span><span class="ar">≈1910 / 2335</span></div>
+        <div class="row tot"><span class="nm">Итого · введено / итог (по объектам с цифрами)</span><span class="ar">≈1610 / 2035</span></div>
       </div>
       <div class="col">
         <h3 style="color:var(--amber)">Строятся · 0 / итог</h3>
@@ -200,8 +200,8 @@ var C={work:"#2E9E5B",part:"#378ADD",build:"#E09A2B",out:"#E24B4A",sc:"#9AA0A6",
 var LABRU={all:"все объекты",work:"работающие ФЦ",part:"частично введённые",build:"строящиеся",out:"выбывшие (БПЛА)",sc:"сортировочные центры",ppp:"пункты приёма (ППП)"};
 var D=[
 ["Электросталь",38.45,55.79,"out","250"],["Коледино",37.48,55.31,"work","200+"],["Софьино",38.2,55.42,"work","41"],
-["Шушары (СПб)",30.4,59.75,"out","106"],["Красный Бор (Никольское)",30.9,59.6,"work","154"],["Уткина Заводь",30.6,59.85,"out","17"],
-["Алексин · Тула",37.1,54.5,"work","300"],["Воронеж",39.2,51.66,"work","156"],["Котовск",41.5,52.6,"out","108"],["Обухово (МО)",38.6,55.83,"work","110"],["Чашниково (МО)",37.05,56.05,"work","115"],["Пушкино (МО)",37.85,56.02,"work","46"],
+["Шушары (СПб)",30.4,59.75,"out","106"],["Красный Бор (Никольское)",31.25,59.42,"work","134"],["Уткина Заводь",30.6,59.85,"out","17"],
+["Алексин · Тула",37.1,54.5,"out","300"],["Воронеж",39.2,51.66,"work","156"],["Котовск",41.5,52.6,"out","108"],["Обухово (МО)",38.6,55.83,"work","110"],["Чашниково (МО)",37.05,56.05,"work","115"],["Пушкино (МО)",37.85,56.02,"work","46"],
 ["Рязань",39.9,54.55,"out","170"],["Тверь",35.9,56.86,"work","150"],["Владимир",40.4,56.13,"out","128/175"],
 ["Ярославль",39.87,57.62,"build","0/230"],["Смоленск",32.05,54.78,"build","0/180"],["Н.Новгород",44.0,56.33,"build","0/150"],
 ["Краснодар",39.0,45.04,"out","100"],["Невинномысск",41.94,44.63,"out","94"],["Ростов-на-Дону",39.7,47.24,"build","0/183"],["Волгоград",44.5,48.7,"out","48"],
@@ -217,7 +217,7 @@ var D=[
 ["Липецк",39.6,52.6,"sc","н/д"],["Курск",36.2,51.73,"build","0/103"],["Белгород",36.6,50.6,"sc","н/д"],
 ["Брянск",34.4,53.25,"sc","н/д"],["Калуга",36.28,54.51,"sc","н/д"],["Иваново",40.97,57.0,"build","н/д"],["Узловая",38.2,53.98,"sc","н/д"],
 ["Подольск (ФЦ)",37.5,55.43,"sc","н/д"],["Белые Столбы",37.9,55.35,"sc","н/д"],["Крёкшино",37.1,55.6,"sc","н/д"],
-["Нахабино",37.17,55.85,"sc","н/д"],["Чехов",37.5,55.15,"sc","н/д"],["Новокосино",37.86,55.74,"sc","н/д"],["Внуково",37.28,55.6,"sc","н/д"],
+["Нахабино",37.17,55.85,"sc","н/д"],["Чехов",37.556,55.126,"sc","н/д"],["Новокосино",37.86,55.74,"sc","н/д"],["Внуково",37.28,55.6,"sc","н/д"],
 ["Тамбов",41.45,52.72,"sc","н/д"],["Архангельск",40.52,64.54,"sc","н/д"],["Мурманск",33.08,68.97,"sc","н/д"],["Псков",28.33,57.82,"sc","н/д"],["Вологда",39.87,59.22,"sc","н/д"],
 ["Тюмень",65.53,57.15,"sc","н/д"],["Новокузнецк",87.13,53.76,"sc","н/д"],["Владикавказ",44.68,43.02,"sc","н/д"],["Абакан",91.44,53.72,"sc","н/д"],
 ["Ульяновск",48.61,54.39,"sc","н/д"],["Ижевск",53.2,56.79,"sc","н/д"],["Кемерово",86.14,55.32,"sc","н/д"],["Севастополь",33.52,44.61,"sc","н/д"],["Челябинск",61.3,55.23,"sc","н/д"],
@@ -293,6 +293,16 @@ d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(f
     });
     c.addEventListener("mouseleave",function(){tip.style("opacity",0);});
     inn.appendChild(c);
+    if(/Красный Бор/.test(d[0])){
+      var fr=20/154,a0=-Math.PI/2,a1=a0+fr*2*Math.PI;
+      var x0=(r*Math.cos(a0)).toFixed(2),y0=(r*Math.sin(a0)).toFixed(2);
+      var x1=(r*Math.cos(a1)).toFixed(2),y1=(r*Math.sin(a1)).toFixed(2);
+      var wedge=document.createElementNS(NS,"path");
+      wedge.setAttribute("d","M0 0 L "+x0+" "+y0+" A "+r.toFixed(2)+" "+r.toFixed(2)+" 0 0 1 "+x1+" "+y1+" Z");
+      wedge.setAttribute("fill","#E24B4A");wedge.setAttribute("stroke","#fff");wedge.setAttribute("stroke-width","0.8");
+      wedge.style.pointerEvents="none";
+      inn.appendChild(wedge);
+    }
     var L=LBL[d[0]];
     if(L){
       var t=document.createElementNS(NS,"text");
