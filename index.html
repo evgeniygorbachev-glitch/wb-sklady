@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Склады Wildberries — интерактивная карта (16 августа 2026)</title>
+<title>Склады Wildberries — интерактивная карта (24 августа 2026)</title>
 <style>
 :root{
   --bg:#f5f6f8; --card:#ffffff; --ink:#141719; --mut:#6b7280; --line:#e7e9ee;
@@ -18,6 +18,12 @@ body{margin:0;background:var(--bg);color:var(--ink);
 h1{font-size:25px;font-weight:600;margin:0 0 4px;letter-spacing:-.2px}
 .sub{color:var(--mut);font-size:14px;margin:0 0 22px}
 .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:22px}
+.tabs{display:flex;gap:8px;margin:0 0 20px;border-bottom:1px solid var(--line);padding-bottom:0}
+.tabs button{font:inherit;font-size:15px;font-weight:500;cursor:pointer;padding:10px 22px;border:none;background:none;
+  color:var(--mut);border-bottom:2px solid transparent;margin-bottom:-1px;transition:.12s}
+.tabs button:hover{color:var(--ink)}
+.tabs button.on{color:var(--ink);border-bottom-color:var(--ink)}
+#view-ozon{display:none}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px 17px}
 .kpi .l{font-size:12px;color:var(--mut);margin-bottom:5px}
 .kpi .v{font-size:22px;font-weight:600;letter-spacing:-.3px}
@@ -43,25 +49,31 @@ h1{font-size:25px;font-weight:600;margin:0 0 4px;letter-spacing:-.2px}
 .row.tot .ar{color:var(--ink)}
 .foot{color:var(--mut);font-size:12px;margin-top:8px}
 svg{width:100%;height:auto;display:block}
-#tip{position:absolute;pointer-events:none;opacity:0;transform:translate(-50%,-118%);
+#tip,#otip{position:absolute;pointer-events:none;opacity:0;transform:translate(-50%,-118%);
   background:var(--ink);color:#fff;border-radius:8px;padding:6px 10px;font-size:12px;white-space:nowrap;
   box-shadow:0 4px 14px rgba(0,0,0,.18);transition:opacity .1s}
-#tip b{font-weight:600}
+#tip b,#otip b{font-weight:600}
 @media(max-width:1040px){.kpis{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:760px){.kpis{grid-template-columns:repeat(2,1fr)}.cols{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>Склады Wildberries — интерактивная карта</h1>
-  <p class="sub">Фулфилмент-центры и СЦ по России и СНГ · данные на <b>16 августа 2026</b></p>
+  <h1 id="pageTitle">Склады Wildberries — логистическая сеть</h1>
+  <p class="sub">Фулфилмент-центры и СЦ по России и СНГ · данные на <b>24 августа 2026</b></p>
 
+  <div class="tabs" id="tabs">
+    <button data-v="wb" class="on">Wildberries</button>
+    <button data-v="ozon">Ozon</button>
+  </div>
+
+  <div id="view-wb">
   <div class="kpis">
-    <div class="kpi"><div class="l">Сеть сейчас (RWB, II кв. 2026)</div><div class="v">5,6 <small>млн м², 209 объектов</small></div></div>
-    <div class="kpi"><div class="l">План к концу 2026</div><div class="v">6,9 <small>млн м² (+1,7)</small></div></div>
-    <div class="kpi"><div class="l">Выбыло (БПЛА)</div><div class="v" style="color:var(--red)">~2,19 <small>млн м² · ≈40%</small></div></div>
-    <div class="kpi"><div class="l">Раскрытые (работают + выбыли) · РФ / СНГ</div><div class="v">3,2 / 0,3 <small>млн м²</small></div></div>
-    <div class="kpi"><div class="l">Субаренда · известно / выбыло</div><div class="v">231 / 180 <small>тыс. м²</small></div></div>
+    <div class="kpi"><div class="l">Сеть сейчас</div><div class="v">5,6 <small>млн м² · 209 объектов</small></div></div>
+    <div class="kpi"><div class="l">План к концу 2026</div><div class="v">6,9 <small>млн м² · +1,7</small></div></div>
+    <div class="kpi"><div class="l">Фулфилмент · объекты / СЦ</div><div class="v">65 / 83 <small>на карте</small></div></div>
+    <div class="kpi"><div class="l">Раскрыто по объектам</div><div class="v">3,5 <small>млн м² · РФ 3,2 / СНГ 0,3</small></div></div>
+    <div class="kpi"><div class="l">Потери от БПЛА</div><div class="v" style="color:var(--red)">~2,19 <small>млн м² · ≈40%</small></div></div>
   </div>
 
   <div class="card">
@@ -78,7 +90,7 @@ svg{width:100%;height:auto;display:block}
     </div>
     <p class="count" id="count"></p>
     <div style="position:relative">
-      <svg id="map" viewBox="0 0 960 470" role="img" aria-label="Карта России со складами Wildberries"></svg>
+      <svg id="map" viewbox="0 0 960 470" role="img" aria-label="Карта России со складами Wildberries"></svg>
       <div id="tip"></div>
       <button id="zreset" style="position:absolute;top:8px;right:8px;font:inherit;font-size:12px;cursor:pointer;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.06)">Сбросить зум</button>
     </div>
@@ -362,8 +374,352 @@ svg{width:100%;height:auto;display:block}
       </div>
     </div>
   </div>
+  </div>
+
+  <div id="view-ozon">
+    <div class="kpis">
+      <div class="kpi"><div class="l">Сеть сейчас</div><div class="v">5,0+ <small>млн м² · 200+ объектов</small></div></div>
+      <div class="kpi"><div class="l">План к концу 2026</div><div class="v">5,9 <small>млн м² · +0,85</small></div></div>
+      <div class="kpi"><div class="l">Фулфилмент · объекты / СЦ</div><div class="v">56 / 170+ <small>в 22 кластерах</small></div></div>
+      <div class="kpi"><div class="l">Раскрыто по объектам</div><div class="v">2,62 <small>млн м² · из 5,0+</small></div></div>
+      <div class="kpi"><div class="l">Потери от БПЛА</div><div class="v" style="color:var(--red)">~211 <small>тыс. м² · 5 остановлено</small></div></div>
+    </div>
+
+    <div class="card">
+      <h2>Карта по статусу — с фильтром</h2>
+      <div class="filters" id="ofilters">
+        <button data-f="all" class="on">Все</button>
+        <button data-f="work"><i class="d" style="background:var(--green)"></i>Работают</button>
+        <button data-f="part"><i class="d" style="background:var(--blue)"></i>Частично</button>
+        <button data-f="build"><i class="d" style="background:var(--amber)"></i>Строятся</button>
+        <button data-f="out"><i class="d" style="background:var(--red)"></i>Атакованы</button>
+        <button data-f="sc"><i class="d" style="background:var(--gray)"></i>СЦ</button>
+      </div>
+      <p class="count" id="ocount"></p>
+      <div style="position:relative">
+        <svg id="omap" viewbox="0 0 960 470" role="img" aria-label="Карта России со складами Ozon"></svg>
+        <div id="otip"></div>
+        <button id="ozreset" style="position:absolute;top:8px;right:8px;font:inherit;font-size:12px;cursor:pointer;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.06)">Сбросить зум</button>
+      </div>
+      <div class="legend">
+        <span><i class="dot" style="background:var(--green)"></i>работает</span>
+        <span><i class="dot" style="background:var(--blue)"></i>частично введён</span>
+        <span><i class="dot" style="background:var(--amber)"></i>строится</span>
+        <span><i class="dot" style="background:var(--red)"></i>атакован</span>
+        <span><i class="dot" style="background:var(--gray)"></i>площадь н/д</span>
+        <span>Размер точки ≈ площадь · наведи для деталей</span>
+      </div>
+      <p class="maphint">Колесо / жест — масштаб, перетаскивание — двигать карту. Действующие площадки фулфилмента по выгрузке API Ozon плюс 9 строящихся объектов с объявленной площадью. Размер точки пропорционален проектной площади; серые точки — объекты, по которым площадь не раскрыта.</p>
+    </div>
+
+    <div class="card">
+      <h2>Объекты по статусу (площадь, тыс. м²)</h2>
+    <div class="cols">
+      <div class="col">
+        <h3 style="color:var(--red)">Выбыли · БПЛА (хронология)</h3>
+        <div class="row"><span class="nm">1. Чапаевск · Самара, 22.08</span><span class="ar">76</span></div>
+        <div class="row"><span class="nm">2. Оренбург, 23.08</span><span class="ar">40/80</span></div>
+        <div class="row"><span class="nm">3. Краснодар, 24.08</span><span class="ar">н/д</span></div>
+        <div class="row"><span class="nm">4. Махачкала, 24.08</span><span class="ar">55/128</span></div>
+        <div class="row"><span class="nm">5. Энем · Адыгея, 24.08</span><span class="ar">40/120</span></div>
+        <div class="row tot"><span class="nm">Итого · 5 объектов остановлено</span><span class="ar">~211</span></div>
+        <p class="foot" style="margin-top:6px">Адыгейск (107) и Невинномысск (92) 24.08 тоже атакованы, но здание и товар не повреждены — они в блоке «Атакованы, но не выбыли» ниже.</p>
+      </div>
+      <div class="col" style="grid-column:span 2">
+        <h3 style="color:var(--green)">Работают и частично · по округам · введено / итог</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 18px">
+          <div>
+            <div class="row" style="font-weight:600;color:var(--mut);padding-top:4px">Московский регион</div>
+            <div class="row"><span class="nm">Пушкино (2 корпуса)</span><span class="ar">152</span></div>
+            <div class="row"><span class="nm">Хоругвино (обыч+КГТ+ПАЛ)</span><span class="ar">93</span></div>
+            <div class="row"><span class="nm">Никольское-2 (КГТ, аренда 12.08)</span><span class="ar">80</span></div>
+            <div class="row"><span class="nm">Софьино</span><span class="ar">80</span></div>
+            <div class="row"><span class="nm">Гривно · Подольск</span><span class="ar">80</span></div>
+            <div class="row"><span class="nm">Жуковский (PNK)</span><span class="ar">80</span></div>
+            <div class="row"><span class="nm">Петровское · Истра</span><span class="ar">75</span></div>
+            <div class="row"><span class="nm">Инсити Радищево (хаб, аренда 12.08)</span><span class="ar">60</span></div>
+            <div class="row"><span class="nm">Ногинск · Обухово (КГТ)</span><span class="ar">43</span></div>
+            <div class="row"><span class="nm">Радумля (КГТ)</span><span class="ar">40/80</span></div>
+            <div class="row"><span class="nm">Домодедово</span><span class="ar">40/80</span></div>
+            <div class="row"><span class="nm">Ватутинки · Новая Москва</span><span class="ar">н/д/140</span></div>
+            <div class="row"><span class="nm">Купавна · Давыдовское · Павло-Слободское (КГТ)</span><span class="ar">н/д</span></div>
+            <div class="row"><span class="nm">Вешки · Электросталь · Быково</span><span class="ar">н/д</span></div>
+            <div class="row tot"><span class="nm">Итого Московский регион</span><span class="ar">823/1043</span></div>
+
+            <div class="row" style="font-weight:600;color:var(--mut);padding-top:12px">Северо-Запад</div>
+            <div class="row"><span class="nm">СПб Бугры</span><span class="ar">135</span></div>
+            <div class="row"><span class="nm">СПб Волхонка (КГТ+ПАЛ, 3 корпуса)</span><span class="ar">110</span></div>
+            <div class="row"><span class="nm">СПб Колпино</span><span class="ar">104</span></div>
+            <div class="row"><span class="nm">Порошкино · Ленобласть</span><span class="ar">60/100</span></div>
+            <div class="row"><span class="nm">СПб Шушары (обыч+КГТ)</span><span class="ar">39/80</span></div>
+            <div class="row"><span class="nm">Петро-Славянка · Шоссейная · Калининград</span><span class="ar">н/д</span></div>
+            <div class="row tot"><span class="nm">Итого Северо-Запад</span><span class="ar">448/529</span></div>
+
+            <div class="row" style="font-weight:600;color:var(--mut);padding-top:12px">Центральная Россия</div>
+            <div class="row"><span class="nm">Тверь (Боровлёво-2)</span><span class="ar">40</span></div>
+            <div class="row"><span class="nm">Ярославль (Корюково)</span><span class="ar">40/80</span></div>
+            <div class="row"><span class="nm">Воронеж-1 (Рамонский р-н)</span><span class="ar">25</span></div>
+            <div class="row"><span class="nm">Воронеж-2 (Александровка)</span><span class="ar">20/75</span></div>
+            <div class="row"><span class="nm">Смоленск</span><span class="ar">н/д</span></div>
+            <div class="row tot"><span class="nm">Итого Центр</span><span class="ar">125/220</span></div>
+          </div>
+          <div>
+            <div class="row" style="font-weight:600;color:var(--mut);padding-top:4px">Юг и Кавказ</div>
+            <div class="row"><span class="nm">Адыгейск · атакован 24.08</span><span class="ar">107</span></div>
+            <div class="row"><span class="nm">Невинномысск · атакован 24.08</span><span class="ar">92</span></div>
+            <div class="row"><span class="nm">Ростов-на-Дону-2</span><span class="ar">40/120</span></div>
+            <div class="row"><span class="nm">Ростов-на-Дону-1</span><span class="ar">38</span></div>
+            <div class="row"><span class="nm">Новороссийск</span><span class="ar">20</span></div>
+            <div class="row"><span class="nm">Волгоград (Гумрак)</span><span class="ar">5/35</span></div>
+            <div class="row"><span class="nm">Южный обход (КГТ)</span><span class="ar">н/д</span></div>
+            <div class="row tot"><span class="nm">Итого Юг и Кавказ</span><span class="ar">302/412</span></div>
+
+            <div class="row" style="font-weight:600;color:var(--mut);padding-top:12px">Поволжье</div>
+            <div class="row"><span class="nm">Казань (Зеленодольск, 3 очереди)</span><span class="ar">122</span></div>
+            <div class="row"><span class="nm">Саратов</span><span class="ar">100</span></div>
+            <div class="row"><span class="nm">Уфа (Благовещенск)</span><span class="ar">60</span></div>
+            <div class="row"><span class="nm">Н. Новгород (Канавинский)</span><span class="ar">40/149</span></div>
+            <div class="row"><span class="nm">Самара Преображенка (КГТ)</span><span class="ar">27/46</span></div>
+            <div class="row"><span class="nm">Оргсинтез · Столбище · НиНо (КГТ)</span><span class="ar">н/д</span></div>
+            <div class="row tot"><span class="nm">Итого Поволжье</span><span class="ar">349/477</span></div>
+
+            <div class="row" style="font-weight:600;color:var(--mut);padding-top:12px">Урал</div>
+            <div class="row"><span class="nm">Пермь (роботизирован)</span><span class="ar">100</span></div>
+            <div class="row"><span class="nm">Екатеринбург (Кольцовский)</span><span class="ar">100</span></div>
+            <div class="row"><span class="nm">Тюмень (Успенка)</span><span class="ar">40/80</span></div>
+            <div class="row"><span class="nm">Екатеринбург Пышма (КГТ)</span><span class="ar">н/д</span></div>
+            <div class="row tot"><span class="nm">Итого Урал</span><span class="ar">240/280</span></div>
+
+            <div class="row" style="font-weight:600;color:var(--mut);padding-top:12px">Сибирь и Дальний Восток</div>
+            <div class="row"><span class="nm">Новосибирск-2 (PNK Толмачёво)</span><span class="ar">80/100</span></div>
+            <div class="row"><span class="nm">Кемерово</span><span class="ar">65/100</span></div>
+            <div class="row"><span class="nm">Новосибирск-1 (PNK Толмачёво)</span><span class="ar">64/67</span></div>
+            <div class="row"><span class="nm">Омск (Солнечный)</span><span class="ar">40/69</span></div>
+            <div class="row"><span class="nm">Красноярск Старцево</span><span class="ar">35/104</span></div>
+            <div class="row"><span class="nm">Хабаровск (ФЦ 20 + СЦ 4)</span><span class="ar">24</span></div>
+            <div class="row"><span class="nm">Красноярск (МРФЦ)</span><span class="ar">20</span></div>
+            <div class="row"><span class="nm">Артём (Приморье) · Барнаул</span><span class="ar">н/д</span></div>
+            <div class="row tot"><span class="nm">Итого Сибирь+ДВ</span><span class="ar">328/484</span></div>
+          </div>
+        </div>
+        <div class="row tot"><span class="nm">Итого РФ · введено / итог</span><span class="ar">≈2615 / 3445</span></div>
+        <p class="foot" style="margin-top:6px">Детали по атакованным, но работающим объектам — в блоке «Атакованы, но не выбыли» ниже.</p>
+        <p class="foot"><b>Проверено по источникам (24.08.2026):</b> Бугры — build-to-suit с PST-Development на 135к · Волхонка — 3 корпуса ~110к, сделка 7,5 млрд ₽ · Колпино — 103,8к · Казань — 3-я очередь подняла площадь с 74 до 122к · Невинномысск — 2-я и 3-я очереди введены, итого 92к · Адыгейск — «Ромекс-Теучежский» ~107к · Хоругвино — пресс-релиз «более 70к», 2ГИС 93к, цифра 113к не подтверждается · Пушкино — 152к по «Ведомостям» · Жуковский, Софьино — по 80к аренды после пожара на Истре в 2022 · Никольское-2 и Инсити Радищево — новые сделки аренды от 12.08.2026 на 80 и 60к.</p>
+      </div>
+      <div class="col">
+        <h3 style="color:var(--amber)">Строятся · 0 / итог</h3>
+        <div class="row"><span class="nm">Приморский край (1-й этап)</span><span class="ar">97</span></div>
+        <div class="row"><span class="nm">Краснодарский край (2-й склад)</span><span class="ar">85</span></div>
+        <div class="row"><span class="nm">Новороссийск (новый ЛЦ)</span><span class="ar">85</span></div>
+        <div class="row"><span class="nm">Воронеж (3-й ФЦ, 2027)</span><span class="ar">80</span></div>
+        <div class="row"><span class="nm">Пушкино · СЦ (2027)</span><span class="ar">65</span></div>
+        <div class="row"><span class="nm">Иркутская обл. (2027)</span><span class="ar">60</span></div>
+        <div class="row"><span class="nm">Воронеж · хаб (осень 2026)</span><span class="ar">60</span></div>
+        <div class="row"><span class="nm">Пермский край · КГТ (осень 2026)</span><span class="ar">40</span></div>
+        <div class="row"><span class="nm">Челябинская обл. · до конца 2026</span><span class="ar">н/д</span></div>
+        <div class="row"><span class="nm">Архангельская обл. · план</span><span class="ar">н/д</span></div>
+        <div class="row"><span class="nm">Якутия · Бурятия · Сахалин · план</span><span class="ar">н/д</span></div>
+        <div class="row tot"><span class="nm">Итого · стройка + план</span><span class="ar">0 / 572</span></div>
+        <p class="foot" style="margin-top:6px">Плюс вторые очереди на действующих площадках — ещё ~830 тыс. м² к вводу (разница между «введено» и «итог» в средней колонке).</p>
+      </div>
+    </div>
+    <p class="foot"><b>Сортировочные центры (СЦ)</b> — приёмка FBS/realFBS, площади не раскрываются. Известна только общая цифра: свыше 170 СЦ на начало 2026 года. В отличие от WB, Ozon не публикует ни карту складов, ни адреса РФЦ — они видны только в личном кабинете на шаге создания поставки, поэтому каждая цифра выше взята из отдельного пресс-релиза, сделки аренды или заявления региональных властей. «X/Y» = введено / итоговая площадь; «н/д» — площадь не раскрыта.<br>
+<b>Специализация</b> (видно при наведении на точку): <b>КГТ</b> — крупногабарит, <b>ЮВЕЛ</b> — ювелирные изделия, <b>ПАЛ</b> — паллетная приёмка. Из 56 площадок: 18 работают с крупногабаритом, 6 — с ювелиркой, 2 — паллетные, 2 — только шины. Поставка FBO оформляется в кластер, а не в конкретный склад: внутри кластера Ozon сам распределяет товар. Плюс сервисные объекты: фотостудия в Хоругвино и обработка возвратов в Солнечногорске.</p>
+    </div>
+
+    <div class="card"><h2>Атакованы, но не выбыли — по объектам</h2>
+      <p style="font-size:13px;color:var(--mut);margin:0 0 12px">Объекты под ударами с 22 августа, которые сохранили здание и товар. Сгруппировано по объекту: если атак было несколько — перечислены все даты.</p>
+      <div class="cols" style="grid-template-columns:1fr 1fr">
+        <div class="col">
+          <h3>Атакованы, ущерба нет</h3>
+          <div class="row"><span class="nm"><b>Адыгейск</b><br><span style="color:var(--mut)">24.08 — склад эвакуирован, здание и товар не повреждены, объект временно закрыт на время работы экстренных служб. Часть источников называет «Адыгейском» именно горевший склад в Энеме — площадки в 20 км друг от друга, разграничение предварительное</span></span><span class="ar">107</span></div>
+          <div class="row"><span class="nm"><b>Невинномысск</b><br><span style="color:var(--mut)">24.08 — склад эвакуирован, здание и товар не повреждены, объект временно закрыт на время работы экстренных служб</span></span><span class="ar">92</span></div>
+        </div>
+        <div class="col">
+          <h3 style="color:var(--red)">Остановлены — детали</h3>
+          <div class="row"><span class="nm"><b>Чапаевск (Самара)</b>, 22.08<br><span style="color:var(--mut)">первый в истории удар по складу Ozon. Пожар, за несколько минут эвакуировано более 500 работников, есть пострадавшие. Горячая линия и психологи</span></span><span class="ar">76</span></div>
+          <div class="row"><span class="nm"><b>Оренбург</b>, 23.08<br><span style="color:var(--mut)">обломки дрона на территорию логокомплекса, возгорание потушено МЧС, пострадавших нет. Работа остановлена на неопределённый срок</span></span><span class="ar">40/80</span></div>
+          <div class="row"><span class="nm"><b>Краснодар</b> (Елизаветинская), 24.08<br><span style="color:var(--mut)">крупный пожар после попадания БПЛА, сотрудники эвакуированы вовремя, работа приостановлена</span></span><span class="ar">н/д</span></div>
+          <div class="row"><span class="nm"><b>Махачкала</b> (Алмало), 24.08<br><span style="color:var(--mut)">около 5 утра МСК под удар попал крупнейший логоцентр СКФО, возгорание. Несколько пострадавших, угрозы жизни нет. Маршруты перераспределены</span></span><span class="ar">55/128</span></div>
+          <div class="row"><span class="nm"><b>Энем, Адыгея</b> (Тахтамукайский р-н), 24.08<br><span style="color:var(--mut)">крупный пожар, тушение большими силами МЧС, эвакуировано более 300 работников, пострадавших нет. Заказы из хаба отменяются или перераспределяются</span></span><span class="ar">40/120</span></div>
+        </div>
+      </div>
+      <p class="foot">Первый удар по складам Ozon — в ночь на 22 августа 2026, через месяц после начала атак на Wildberries. За три дня — семь объектов, из них шесть в ночь на 24 августа. По Энему украинские источники называют площадь всего комплекса 91,2 тыс. м²; Ozon занимает в нём 40 тыс. введённых из 120 проектных — тот же эффект «арены», что был с Уткиной Заводью у WB. Для сравнения: у Wildberries с 18 июля выбыло ~2,19 млн м² (18 объектов).</p>
 </div>
 
+    <div class="card">
+      <h2>Сортировочные центры (СЦ)</h2>
+      <p style="font-size:13px;color:var(--mut);margin:0 0 12px">Товар не хранят — через них идёт поток посылок к покупателям и возвраты обратно. Селлер отгружать поставку в СЦ не может, только в РФЦ.</p>
+      <div class="cols" style="grid-template-columns:1fr 1fr">
+        <div class="col">
+          <h3>Масштаб сети</h3>
+          <div class="row"><span class="nm">Сортировочных центров</span><span class="ar">170+</span></div>
+          <div class="row"><span class="nm">Пушкино · СЦ <span style="color:var(--mut)">строится, запуск I кв. 2027, 11 млрд ₽</span></span><span class="ar">65</span></div>
+          <div class="row"><span class="nm">Хабаровск · СЦ <span style="color:var(--mut)">в составе ФЦ, с 09.2023</span></span><span class="ar">4</span></div>
+          <div class="row"><span class="nm">Красноярск · СЦ (ул. Пограничников)</span><span class="ar">н/д</span></div>
+          <div class="row"><span class="nm">Остальные ~168 СЦ</span><span class="ar">н/д</span></div>
+        </div>
+        <div class="col">
+          <h3>Прочие типы объектов</h3>
+          <div class="row"><span class="nm">Кросс-док — приём партии для перевозки на РФЦ</span><span class="ar">сотни</span></div>
+          <div class="row"><span class="nm">ПВЗ — выдача заказов покупателю</span><span class="ar">тысячи</span></div>
+        </div>
+      </div>
+      <p class="foot">Ozon перечень СЦ публично не раскрывает — в отличие от WB, где карта складов с адресами доступна в открытом виде. Известна только общая цифра: свыше 170 сортировочных центров на начало 2026 года.</p>
+    </div>
+
+    <div class="card">
+      <h2>Объекты за пределами России (СНГ / ЕАЭС)</h2>
+      <p style="font-size:13px;color:var(--mut);margin:0 0 12px">Ozon работает в Армении, Белоруссии, Казахстане, Киргизии и Узбекистане. Площади раскрыты только по двум объектам.</p>
+      <div class="cols" style="grid-template-columns:1fr 1fr">
+        <div class="col">
+          <h3>С раскрытой площадью</h3>
+          <div class="row"><span class="nm">Алматы-2 (Алматинская обл.) · 1-я очередь</span><span class="ar">20</span></div>
+          <div class="row"><span class="nm">Ереван (МРФЦ) · первый ФЦ в Армении</span><span class="ar">2,5</span></div>
+          <div class="row tot"><span class="nm">Итого раскрыто</span><span class="ar">22,5</span></div>
+        </div>
+        <div class="col">
+          <h3>Без раскрытой площади</h3>
+          <div class="row"><span class="nm">Астана (РФЦ)</span><span class="ar">н/д</span></div>
+          <div class="row"><span class="nm">Минск (МПСЦ)</span><span class="ar">н/д</span></div>
+          <div class="row"><span class="nm">Атырау · Актобе · Шымкент · Костанай</span><span class="ar">н/д</span></div>
+          <div class="row"><span class="nm">Киргизия · Узбекистан</span><span class="ar">н/д</span></div>
+        </div>
+      </div>
+      <p class="foot">В Казахстане работает 8 логистических центров — в Алматы, Астане, Атырау, Актобе, Шымкенте и Костанае. Атак на зарубежные объекты Ozon не было.</p>
+    </div><div class="card" style="display:none">
+      <h2>Все площадки по кластерам</h2>
+      <p style="font-size:13px;color:var(--mut);margin:0 0 12px">Дубль — скрыт.</p>
+      <div class="cols">
+        <div class="col">
+          <h3>Москва и МО · 17 площадок</h3>
+          <div class="row"><span class="nm">Хоругвино</span><span class="ar">обыч+КГТ+пал</span></div>
+          <div class="row"><span class="nm">Пушкино</span><span class="ar">2 склада+ювел</span></div>
+          <div class="row"><span class="nm">Софьино · Домодедово</span><span class="ar">обычный</span></div>
+          <div class="row"><span class="nm">Ногинск · Гривно</span><span class="ar">обыч+КГТ</span></div>
+          <div class="row"><span class="nm">Жуковский · Ватутинки</span><span class="ar">обычный</span></div>
+          <div class="row"><span class="nm">Вешки · Петровское</span><span class="ar">обычный</span></div>
+          <div class="row"><span class="nm">Радумля · Купавна</span><span class="ar">КГТ</span></div>
+          <div class="row"><span class="nm">Давыдовское · Павло-Слободское</span><span class="ar">КГТ</span></div>
+          <div class="row"><span class="nm">Жуковский Шины</span><span class="ar">шины</span></div>
+          <div class="row"><span class="nm">Хоругвино Фотостудия</span><span class="ar">сервис</span></div>
+          <div class="row"><span class="nm">Солнечногорск Возвраты</span><span class="ar">сервис</span></div>
+        </div>
+        <div class="col">
+          <h3>Северо-Запад · 7 площадок</h3>
+          <div class="row"><span class="nm">СПб Шушары</span><span class="ar">обыч+КГТ</span></div>
+          <div class="row"><span class="nm">СПб Бугры</span><span class="ar">обыч+ювел</span></div>
+          <div class="row"><span class="nm">СПб Колпино · Порошкино</span><span class="ar">обычный</span></div>
+          <div class="row"><span class="nm">Санкт-Петербург РФЦ</span><span class="ar">обычный</span></div>
+          <div class="row"><span class="nm">СПб Волхонка</span><span class="ar">2 КГТ+пал</span></div>
+          <div class="row"><span class="nm">СПб Шоссейная</span><span class="ar">КГТ</span></div>
+          <div class="row"><span class="nm">Калининград</span><span class="ar">МРФЦ</span></div>
+
+          <h3 style="margin-top:14px">Юг и Кавказ · 8 площадок</h3>
+          <div class="row"><span class="nm">Краснодар · Новороссийск</span><span class="ar">обычный</span></div>
+          <div class="row"><span class="nm">Адыгейск</span><span class="ar">обыч+ювел</span></div>
+          <div class="row"><span class="nm">Южный обход</span><span class="ar">КГТ</span></div>
+          <div class="row"><span class="nm">Ростов-на-Дону</span><span class="ar">2 склада</span></div>
+          <div class="row"><span class="nm">Волгоград · Невинномысск</span><span class="ar">обычный</span></div>
+          <div class="row"><span class="nm">Махачкала</span><span class="ar">обычный</span></div>
+        </div>
+        <div class="col">
+          <h3>Поволжье и Урал · 11 площадок</h3>
+          <div class="row"><span class="nm">Казань</span><span class="ar">обычный</span></div>
+          <div class="row"><span class="nm">КЗН Столбище</span><span class="ar">КГТ</span></div>
+          <div class="row"><span class="nm">Нижний Новгород</span><span class="ar">2 склада</span></div>
+          <div class="row"><span class="nm">НиНо</span><span class="ar">КГТ</span></div>
+          <div class="row"><span class="nm">Самара</span><span class="ar">обыч+КГТ+ювел</span></div>
+          <div class="row"><span class="nm">Саратов · Оренбург</span><span class="ar">обычный</span></div>
+          <div class="row"><span class="nm">Уфа · Пермь</span><span class="ar">обычный</span></div>
+          <div class="row"><span class="nm">Екатеринбург</span><span class="ar">обыч+КГТ+ювел</span></div>
+          <div class="row"><span class="nm">Екатеринбург Пышма</span><span class="ar">КГТ</span></div>
+          <div class="row"><span class="nm">Екатеринбург Шины</span><span class="ar">шины</span></div>
+          <div class="row"><span class="nm">Тюмень</span><span class="ar">обычный</span></div>
+        </div>
+        <div class="col">
+          <h3>Сибирь и ДВ · 7 площадок</h3>
+          <div class="row"><span class="nm">Новосибирск</span><span class="ar">2 обыч+КГТ+ювел</span></div>
+          <div class="row"><span class="nm">Кемерово · Омск</span><span class="ar">обычный</span></div>
+          <div class="row"><span class="nm">Красноярск</span><span class="ar">МРФЦ</span></div>
+          <div class="row"><span class="nm">Красноярск Старцево</span><span class="ar">обычный</span></div>
+          <div class="row"><span class="nm">Хабаровск</span><span class="ar">2 склада</span></div>
+          <div class="row"><span class="nm">Артём (Приморье)</span><span class="ar">МРФЦ</span></div>
+
+          <h3 style="margin-top:14px">Центр · 3 площадки</h3>
+          <div class="row"><span class="nm">Воронеж</span><span class="ar">2 обыч+КГТ</span></div>
+          <div class="row"><span class="nm">Ярославль</span><span class="ar">обычный</span></div>
+          <div class="row"><span class="nm">Тверь</span><span class="ar">обыч+хаб</span></div>
+        </div>
+      </div>
+      <p class="foot">Из 56 площадок: 18 работают с крупногабаритом, 6 — с ювелиркой, 2 — с паллетной приёмкой, 2 — только с шинами. Поставка FBO оформляется в кластер, а не в конкретный склад: внутри кластера Ozon сам распределяет товар.</p>
+    </div>
+
+    <div class="card">
+      <h2>Развитие 2026</h2>
+      <div class="cols" style="grid-template-columns:1fr 1fr">
+        <div class="col">
+          <h3>Запущено в первой половине</h3>
+          <div class="row"><span class="nm">5 комплексов из 15 запланированных</span><span class="ar">&gt;400</span></div>
+          <div class="row"><span class="nm">Нижегородская · Кемеровская области</span><span class="ar">открыты</span></div>
+          <div class="row"><span class="nm">Новосибирская обл. · Красноярский край</span><span class="ar">открыты</span></div>
+          <div class="row"><span class="nm">Ватутинки (Новая Москва)</span><span class="ar">открыт</span></div>
+          <div class="row"><span class="nm">Вместимость / обработка</span><span class="ar">20 млн · 4 млн/д</span></div>
+        </div>
+        <div class="col">
+          <h3>Планируется во второй половине</h3>
+          <div class="row"><span class="nm">Оставшиеся 10 комплексов</span><span class="ar">&gt;850</span></div>
+          <div class="row"><span class="nm">СПб и Ленобласть · Московская обл.</span><span class="ar">план</span></div>
+          <div class="row"><span class="nm">Челябинская обл. · Краснодарский край</span><span class="ar">план</span></div>
+          <div class="row"><span class="nm">Пермский · Приморский края</span><span class="ar">план</span></div>
+          <div class="row"><span class="nm">Вместимость / обработка</span><span class="ar">150 млн · 5 млн/д</span></div>
+        </div>
+      </div>
+      <p class="foot">Инвестиции в технологическое оснащение и IT-инфраструктуру — свыше 30 млрд ₽ (по более ранним данным 23 млрд). Площади указаны по полу, тыс. м². В Пермском крае построен логоцентр с роботизацией.</p>
+    </div>
+
+    
+
+    <div class="card">
+      <h2>Сравнение с Wildberries</h2>
+      <div class="cols" style="grid-template-columns:1fr 1fr 1fr">
+        <div class="col">
+          <h3>Сеть</h3>
+          <div class="row"><span class="nm">Ozon</span><span class="ar">5,0+ млн м²</span></div>
+          <div class="row"><span class="nm">Wildberries</span><span class="ar">5,6 млн м²</span></div>
+        </div>
+        <div class="col">
+          <h3>Фулфилмент-центры</h3>
+          <div class="row"><span class="nm">Ozon</span><span class="ar">56 площадок</span></div>
+          <div class="row"><span class="nm">Wildberries</span><span class="ar">~40 объектов</span></div>
+        </div>
+        <div class="col">
+          <h3>Потери от БПЛА</h3>
+          <div class="row"><span class="nm">Ozon · с 22.08</span><span class="ar" style="color:var(--red)">~211 тыс. м²</span></div>
+          <div class="row"><span class="nm">Wildberries · с 18.07</span><span class="ar" style="color:var(--red)">~2,19 млн м²</span></div>
+        </div>
+      </div>
+      <p class="foot">Сети сопоставимы по площади, но WB под ударами с 18 июля и потерял ~40% мощностей, а Ozon попал под атаки только 22 августа — семь эпизодов за три дня, пять складов остановлено (~211 тыс. м²). У Ozon 56 площадок и мельче средний объект (медиана раскрытых площадей ≈ 60 тыс. м²), у WB — крупные хабы по 150–300 тыс. м², что сделало сеть уязвимее к точечным ударам. Второе отличие — прозрачность: WB публикует карту складов с адресами, Ozon не раскрывает ни адреса РФЦ, ни площади, поэтому по нему удалось собрать 2,62 из 5 млн м² против почти полного покрытия у WB.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var tb=document.getElementById("tabs");
+  tb.addEventListener("click",function(e){
+    var b=e.target.closest("button"); if(!b) return;
+    [].forEach.call(tb.children,function(x){x.classList.remove("on")});
+    b.classList.add("on");
+    var v=b.dataset.v;
+    document.getElementById("view-wb").style.display=(v==="wb")?"block":"none";
+    document.getElementById("view-ozon").style.display=(v==="ozon")?"block":"none";
+    document.getElementById("pageTitle").textContent=(v==="wb")
+      ? "Склады Wildberries — логистическая сеть"
+      : "Склады Ozon — логистическая сеть";
+  });
+})();
+</script>
 <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
 <script>
@@ -451,6 +807,154 @@ var WH={"Белые Столбы":1,"Чехов":1,"Воронеж":1,"Кузн�
 "Софьино":1,"Челябинск":1,"Софрино":1,"Подольск":1,"Астана":1,"Алматы":1,"Белая Дача":1,"Ташкент":1,"Ереван":1};
 function anum(s){var m=String(s).match(/\d+/g);return m?+m[m.length-1]:30;}
 var W=960,H=470,NS="http://www.w3.org/2000/svg";
+
+var OZ=[
+["Пушкино (2 корпуса)",37.86,56.01,"work","152"],["Хоругвино (обыч+КГТ+ПАЛ)",37.03,56.13,"work","93"],
+["Никольское-2 (КГТ, аренда 12.08)",37.52,56.35,"work","80"],["Софьино",38.16,55.50,"work","80"],
+["Гривно, Подольск (обыч+КГТ)",37.50,55.36,"work","80"],["Жуковский (PNK)",38.07,55.57,"work","80"],
+["Петровское, Истра",36.88,55.83,"work","75"],["Инсити Радищево (хаб, аренда 12.08)",37.16,56.02,"work","60"],
+["Ногинск, Обухово (КГТ)",38.25,55.83,"work","43"],["Радумля (КГТ)",37.14,56.06,"part","40/80"],
+["Домодедово",37.87,55.43,"part","40/80"],["Ватутинки, Новая Москва",37.32,55.49,"part","140"],
+["Купавна (КГТ)",38.18,55.75,"work","н/д"],["Давыдовское (КГТ)",36.80,55.86,"work","н/д"],
+["Павло-Слободское (КГТ)",37.05,55.81,"work","н/д"],["Вешки",37.56,55.92,"work","н/д"],
+["Электросталь",38.44,55.78,"work","н/д"],["Быково",38.06,55.62,"work","н/д"],
+["СПб Бугры",30.40,60.08,"work","135"],["СПб Волхонка (КГТ+ПАЛ)",30.27,59.79,"work","110"],
+["СПб Колпино",30.52,59.79,"work","104"],["Порошкино, Ленобласть",30.23,60.12,"part","60/100"],
+["СПб Шушары (обыч+КГТ)",30.45,59.80,"part","39/80"],["СПб Петро-Славянка",30.51,59.81,"work","н/д"],
+["СПб Шоссейная (КГТ)",30.35,59.83,"work","н/д"],["Калининград (МРФЦ)",20.47,54.69,"work","н/д"],
+["Тверь (Боровлёво-2)",35.94,56.80,"work","40"],["Ярославль (Корюково)",39.89,57.63,"part","40/80"],
+["Воронеж-1 (Рамонский р-н)",39.17,51.87,"work","25"],["Воронеж-2 (Александровка)",39.42,51.62,"part","20/75"],
+["Смоленск",32.05,54.79,"work","н/д"],
+["Адыгейск · атакован 24.08",39.18,44.87,"work","107"],["Невинномысск · атакован 24.08",41.91,44.67,"work","92"],
+["Ростов-на-Дону-2",39.90,47.13,"part","40/120"],["Ростов-на-Дону-1",39.89,47.12,"work","38"],
+["Новороссийск",37.56,44.84,"work","20"],["Волгоград (Гумрак)",44.42,48.77,"part","5/35"],
+["Южный обход (КГТ)",39.00,45.02,"work","н/д"],
+["Краснодар · остановлен 24.08",38.98,45.04,"out","н/д"],["Махачкала · остановлен 24.08",47.50,42.98,"out","55/128"],
+["Энем, Адыгея · остановлен 24.08",38.91,44.93,"out","40/120"],
+["Чапаевск, Самара · остановлен 22.08",50.17,53.21,"out","76"],["Оренбург · остановлен 23.08",55.10,51.77,"out","40/80"],
+["Казань (Зеленодольск)",48.85,55.85,"work","122"],["Саратов",46.03,51.53,"work","100"],
+["Уфа (Благовещенск)",55.97,54.74,"work","60"],["Н. Новгород (Канавинский)",43.60,56.26,"part","40/149"],
+["Самара Преображенка (КГТ)",50.13,53.09,"part","27/46"],["Казань (Оргсинтез)",49.17,55.79,"work","н/д"],
+["КЗН Столбище (КГТ)",49.22,55.62,"work","н/д"],["НиНо (КГТ)",43.90,56.32,"work","н/д"],
+["Пермь (роботизирован)",56.23,58.01,"work","100"],["Екатеринбург (Кольцовский)",60.77,56.76,"work","100"],
+["Тюмень (Успенка)",65.17,57.09,"part","40/80"],["Екатеринбург Пышма (КГТ)",60.57,56.97,"work","н/д"],
+["Новосибирск-2 (PNK Толмачёво)",82.56,55.00,"part","80/100"],["Кемерово",86.09,55.35,"part","65/100"],
+["Новосибирск-1 (PNK Толмачёво)",82.62,55.05,"part","64/67"],["Омск (Солнечный)",73.34,54.94,"part","40/69"],
+["Красноярск Старцево",92.94,56.08,"part","35/104"],["Хабаровск (ФЦ+СЦ)",135.10,48.42,"work","24"],
+["Красноярск (МРФЦ)",92.87,56.02,"work","20"],["Артём (Приморье, МРФЦ)",132.19,43.36,"work","н/д"],
+["Барнаул",83.76,53.36,"work","н/д"],
+["Приморский край · 1-й этап",132.00,43.45,"build","97"],["Краснодарский край · 2-й склад",39.10,45.20,"build","85"],
+["Новороссийск · новый ЛЦ",37.70,44.78,"build","85"],["Воронеж · 3-й ФЦ (2027)",39.30,51.75,"build","80"],
+["Пушкино · СЦ (2027)",37.90,56.03,"build","65"],["Иркутская обл. (2027)",104.30,52.30,"build","60"],
+["Воронеж · хаб (осень 2026)",39.10,51.60,"build","60"],["Пермский край · КГТ (осень 2026)",56.05,57.85,"build","40"],
+["Челябинская обл. (до конца 2026)",61.40,55.16,"build","н/д"],
+["Красноярск · СЦ",92.80,55.98,"sc","н/д"],
+["Ереван (МРФЦ)",44.51,40.18,"work","2,5"],["Алматы-2",76.75,43.30,"work","20"],
+["Минск (МПСЦ)",27.75,53.93,"work","н/д"],["Астана",71.43,51.13,"work","н/д"]
+];
+var OZLBL={
+"Пушкино (2 корпуса)":["Москва и МО",0,-16,"middle"],
+"СПб Бугры":["С.-Петербург",-10,-6,"end"],
+"Махачкала · остановлен 24.08":["Махачкала",10,4,"start"],
+"Чапаевск, Самара · остановлен 22.08":["Чапаевск",0,17,"middle"],
+"Оренбург · остановлен 23.08":["Оренбург",0,17,"middle"],
+"Екатеринбург (Кольцовский)":["Екатеринбург",11,-2,"start"],
+"Новосибирск-2 (PNK Толмачёво)":["Новосибирск",0,17,"middle"],
+"Красноярск Старцево":["Красноярск",0,-13,"middle"],
+"Хабаровск (ФЦ+СЦ)":["Хабаровск",0,17,"middle"],
+"Артём (Приморье, МРФЦ)":["Артём",9,5,"start"],
+"Казань (Зеленодольск)":["Казань",-2,-13,"middle"],
+"Ростов-на-Дону-1":["Ростов",-10,4,"end"],
+"Краснодар · остановлен 24.08":["Краснодар",-10,3,"end"],
+"Н. Новгород (Канавинский)":["Н.Новгород",0,-13,"middle"],
+"Воронеж-2 (Александровка)":["Воронеж",10,4,"start"],
+"Пермь (роботизирован)":["Пермь",0,-13,"middle"],
+"Тюмень (Успенка)":["Тюмень",0,-12,"middle"],
+"Уфа (Благовещенск)":["Уфа",-10,4,"end"],
+"Саратов":["Саратов",0,16,"middle"],
+"Иркутская обл. (2027)":["Иркутск",0,16,"middle"],
+"Кемерово":["Кемерово",0,-13,"middle"],
+"Омск (Солнечный)":["Омск",0,16,"middle"],
+"Барнаул":["Барнаул",0,16,"middle"],
+"Смоленск":["Смоленск",-9,4,"end"],
+"Калининград (МРФЦ)":["Калининград",0,17,"middle"],
+"Минск (МПСЦ)":["Минск",-10,3,"end"],"Астана":["Астана",0,16,"middle"],"Алматы-2":["Алматы",9,5,"start"]
+};
+var OZLAB={all:"все объекты",work:"работающие ФЦ",part:"частично введённые",build:"строящиеся",out:"атакованные",sc:"сортировочные центры"};
+function buildOzonMap(feats,rus){
+  var osvg=d3.select("#omap"),otip=d3.select("#otip");
+  if(!osvg.node()) return;
+  var oproj=d3.geoConicEqualArea().rotate([-100,0]).parallels([50,70]);
+  var opath=d3.geoPath(oproj);
+  oproj.fitExtent([[10,10],[W-10,H-24]],{type:"FeatureCollection",features:rus});
+  var oroot=osvg.append("g");
+  oroot.append("g").selectAll("path").data(feats).join("path").attr("d",opath)
+     .attr("fill","var(--other)").attr("stroke","var(--otherline)").attr("stroke-width",.5).attr("vector-effect","non-scaling-stroke");
+  oroot.append("g").selectAll("path").data(rus).join("path").attr("d",opath)
+     .attr("fill","var(--land)").attr("stroke","var(--landline)").attr("stroke-width",1).attr("vector-effect","non-scaling-stroke");
+  var oreg=oroot.append("g");
+  d3.json("https://cdn.jsdelivr.net/npm/@amcharts/amcharts4-geodata@4/json/russiaLow.json")
+    .then(function(rg){
+      var rf=(rg.features||[]).filter(function(f){var n=(f.properties&&(f.properties.name||""))||"";return !/chukot|чукот/i.test(n);});
+      oreg.selectAll("path").data(rf).join("path").attr("d",opath)
+        .attr("fill","none").attr("stroke","var(--regline)").attr("stroke-width",0.5)
+        .attr("stroke-linejoin","round").attr("vector-effect","non-scaling-stroke");
+    }).catch(function(){});
+  var cisN={"112":"Беларусь","398":"Казахстан","51":"Армения"};
+  var cisF=feats.filter(function(d){return cisN[d.id];});
+  oroot.append("g").selectAll("path").data(cisF).join("path").attr("d",opath)
+     .attr("fill","var(--cis)").attr("stroke","var(--cisline)").attr("stroke-width",0.9).attr("vector-effect","non-scaling-stroke");
+  var om=oroot.append("g").node();
+  OZ.forEach(function(d){
+    var p=oproj([d[1],d[2]]); if(!p) return;
+    var r=(d[3]==="sc")?4.6:(3.6+Math.sqrt(anum(d[4]))*0.5);
+    var mk=document.createElementNS(NS,"g");
+    mk.setAttribute("transform","translate("+p[0].toFixed(1)+","+p[1].toFixed(1)+")");
+    mk.dataset.s=d[3];
+    var inn=document.createElementNS(NS,"g");
+    var c=document.createElementNS(NS,"circle");
+    c.setAttribute("r",r.toFixed(1));c.setAttribute("fill",C[d[3]]);c.setAttribute("stroke","#fff");c.setAttribute("stroke-width","1.1");
+    if(d[3]==="sc")c.setAttribute("fill-opacity","0.75");
+    c.style.cursor="pointer";
+    c.addEventListener("mousemove",function(ev){
+      var b=osvg.node().parentNode.getBoundingClientRect();
+      otip.style("opacity",1).style("left",(ev.clientX-b.left)+"px").style("top",(ev.clientY-b.top)+"px")
+         .html("<b>"+d[0]+"</b>"+(d[4]!=="н/д"?(" · "+d[4]+" тыс. м²"):" · площадь н/д"));
+    });
+    c.addEventListener("mouseleave",function(){otip.style("opacity",0);});
+    inn.appendChild(c);
+    var L=OZLBL[d[0]];
+    if(L){
+      var t=document.createElementNS(NS,"text");
+      t.setAttribute("x",L[1]);t.setAttribute("y",L[2]);t.setAttribute("text-anchor",L[3]);
+      t.setAttribute("font-size","11.5");t.setAttribute("font-weight","600");
+      t.setAttribute("paint-order","stroke");t.setAttribute("stroke","#fff");t.setAttribute("stroke-width","3.4");
+      t.setAttribute("stroke-linejoin","round");t.setAttribute("fill","var(--ink)");t.style.pointerEvents="none";
+      t.textContent=L[0];
+      inn.appendChild(t);
+    }
+    mk.appendChild(inn); om.appendChild(mk); mk._inn=inn;
+  });
+  var ocnt=document.getElementById("ocount");
+  function oapply(f){
+    var n=0;
+    [].forEach.call(om.children,function(el){var v=(f==="all"||el.dataset.s===f);el.style.display=v?"":"none";if(v)n++;});
+    ocnt.textContent="Показано: "+n+" — "+OZLAB[f];
+  }
+  var ofb=document.getElementById("ofilters");
+  ofb.addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;
+    [].forEach.call(ofb.children,function(x){x.classList.remove("on");});b.classList.add("on");oapply(b.dataset.f);});
+  oapply("all");
+  var ozoom=d3.zoom().scaleExtent([1,14]).translateExtent([[0,0],[W,H]]).extent([[0,0],[W,H]])
+    .on("zoom",function(e){
+      oroot.attr("transform",e.transform);
+      var s=1/e.transform.k;
+      [].forEach.call(om.children,function(el){if(el._inn)el._inn.setAttribute("transform","scale("+s+")");});
+    });
+  osvg.call(ozoom);
+  document.getElementById("ozreset").addEventListener("click",function(){
+    osvg.transition().duration(350).call(ozoom.transform,d3.zoomIdentity);});
+}
 var svg=d3.select("#map"),tip=d3.select("#tip");
 var proj=d3.geoConicEqualArea().rotate([-100,0]).parallels([50,70]);
 var path=d3.geoPath(proj);
@@ -552,6 +1056,7 @@ d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(f
   svg.call(zoom);
   document.getElementById("zreset").addEventListener("click",function(){
     svg.transition().duration(350).call(zoom.transform,d3.zoomIdentity);});
+  buildOzonMap(feats,rus);
 }).catch(function(){
   svg.append("text").attr("x",W/2).attr("y",H/2).attr("text-anchor","middle").attr("fill","var(--mut)").attr("font-size","14")
      .text("Карта границ не загрузилась — откройте страницу онлайн (на хостинге работает).");
