@@ -56,13 +56,26 @@ table.dmg tbody tr:not(.grp):hover{background:#eef3fb}
 .row.tot{border-top:1px solid var(--line);margin-top:5px;padding-top:6px;font-weight:600}
 .row.tot .ar{color:var(--ink)}
 .foot{color:var(--mut);font-size:12px;margin-top:8px}
-svg{width:100%;height:auto;display:block}
+#map,#omap{width:100%;height:auto;display:block}
 #tip,#otip{position:absolute;pointer-events:none;opacity:0;transform:translate(-50%,-118%);
   background:var(--ink);color:#fff;border-radius:8px;padding:6px 10px;font-size:12px;white-space:nowrap;
   box-shadow:0 4px 14px rgba(0,0,0,.18);transition:opacity .1s}
 #tip b,#otip b{font-weight:600}
 @media(max-width:1040px){.kpis{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:760px){.kpis{grid-template-columns:repeat(2,1fr)}.cols{grid-template-columns:repeat(2,1fr)}}
+</style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+#dmap{height:620px;border-radius:12px;border:1px solid var(--line);background:#eef0ee}
+/* Leaflet рисует маркеры в служебном SVG — глобальные правила для svg его ломают */
+.leaflet-container svg,.leaflet-pane svg{width:auto;height:auto;display:block;max-width:none!important;max-height:none!important}
+.leaflet-container img{max-width:none!important}
+.dlegend{background:rgba(252,252,251,.95);border:1px solid var(--line);border-radius:10px;padding:10px 13px;font-size:12.5px;line-height:1.6}
+.dlegend i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:7px;vertical-align:-1px;border:2px solid #fff}
+.leaflet-popup-content{font-size:13px;line-height:1.45;margin:11px 14px}
+.leaflet-popup-content b{font-weight:600}
+.dtip{font-size:12.5px;line-height:1.35}
 </style>
 </head>
 <body>
@@ -725,11 +738,27 @@ svg{width:100%;height:auto;display:block}
   </div>
 <div id="view-damage">
     <div class="kpis">
-      <div class="kpi"><div class="l">Повреждено за 3 месяца</div><div class="v" style="color:var(--red)">~2,72 <small>млн м² · 27 объектов</small></div></div>
+      <div class="kpi"><div class="l">Повреждено за 3 месяца</div><div class="v" style="color:var(--red)">~2,78 <small>млн м² · 28 объектов</small></div></div>
       <div class="kpi"><div class="l">Wildberries · с 18.07</div><div class="v" style="color:var(--red)">~2368 <small>тыс. м² · 21 объект</small></div></div>
       <div class="kpi"><div class="l">Ozon · с 22.08</div><div class="v" style="color:var(--red)">~270 <small>тыс. м² · 5 объектов</small></div></div>
-      <div class="kpi"><div class="l">Прочие операторы</div><div class="v" style="color:var(--red)">82 <small>тыс. м² · 1 объект</small></div></div>
-      <div class="kpi"><div class="l">В аренде у стороннего владельца</div><div class="v">6 <small>из 27 · мультиарендных 3</small></div></div>
+      <div class="kpi"><div class="l">Прочие операторы</div><div class="v" style="color:var(--red)">138 <small>тыс. м² · 2 объекта</small></div></div>
+      <div class="kpi"><div class="l">В аренде у стороннего владельца</div><div class="v">7 <small>из 28 · мультиарендных 4</small></div></div>
+    </div>
+
+    <div class="card">
+      <h2>Карта повреждённых объектов</h2>
+      <div class="filters" id="dfilters">
+        <button data-f="all" class="on">Все 28</button>
+        <button data-f="wb"><i class="d" style="background:#C1483F"></i>Wildberries</button>
+        <button data-f="oz"><i class="d" style="background:#2C5FB8"></i>Ozon</button>
+        <button data-f="ot"><i class="d" style="background:#7A6BA8"></i>Прочие</button>
+        <button data-f="multi"><i class="d" style="background:#D98324"></i>Арендованные</button>
+      </div>
+      <p class="count" id="dcount"></p>
+      <div style="position:relative">
+        <div id="dmap"></div>
+      </div>
+      <p class="maphint">Реальная картография: Leaflet + тайлы CARTO Positron на данных OpenStreetMap. Радиус круга пропорционален потерянной площади, при зуме размер маркера не меняется. Наведение — краткая справка, клик — карточка объекта с собственником и арендаторами.</p>
     </div>
 
     <div class="card">
@@ -769,15 +798,17 @@ svg{width:100%;height:auto;display:block}
           <tr><td>25</td><td>24.08</td><td>Махачкала · Алмало</td><td>Кумторкалинский р-н</td><td>Дагестан</td><td class="num">55 / 128</td><td>Ozon, крупнейший ЛЦ СКФО</td></tr>
           <tr><td>26</td><td>24.08</td><td>Энем</td><td>Тахтамукайский р-н</td><td>Адыгея</td><td class="num">40 / 120</td><td>Ozon, комплекс 91,2 тыс. м²</td></tr>
 
-          <tr class="grp"><td colspan="7">Прочие логистические операторы — 1 объект, 82 тыс. м²</td></tr>
-          <tr class="rent multi"><td>27</td><td>23.08</td><td>Логопарк «Колпино» · Колпинское ш., 135</td><td>Санкт-Петербург</td><td>Санкт-Петербург</td><td class="num">82</td><td><b>«Логистера»</b> — склад ответственного хранения, товары <b>десятков клиентов</b>. По адресу также <b>«Складовик 24»</b>. Горели шины, аккумуляторы, бумага и полимеры; среди арендаторов — торговцы бумагой и упаковкой, автотовары, промышленная химия. Конкретные бренды не назывались</td></tr>
+          <tr class="grp"><td colspan="7">Прочие операторы и промышленные площадки — 2 объекта, 138 тыс. м²</td></tr>
+          <tr class="rent multi"><td>27</td><td>16.08</td><td>ПЛК «Северное Домодедово» · зелёные склады</td><td>Домодедово</td><td>Московская обл.</td><td class="num">56</td><td>Обрушение корпуса склада <b>фармацевтической компании</b>. Здесь же полностью сгорел завод <b>AlmaFood</b> — производитель ингредиентов для вендинга (сухие сливки, какао, кофе; обжарка до 600 т кофе в месяц, снабжал почти все вендинг-автоматы России). Повреждено ещё около 21 объекта: фасады, крыши, стёкла, автомобили</td></tr>
+          <tr class="rent multi"><td>28</td><td>23.08</td><td>Логопарк «Колпино» · Колпинское ш., 135</td><td>Санкт-Петербург</td><td>Санкт-Петербург</td><td class="num">82</td><td><b>«Логистера»</b> — склад ответственного хранения, товары <b>десятков клиентов</b>. По адресу также <b>«Складовик 24»</b>. Горели шины, аккумуляторы, бумага и полимеры; среди арендаторов — торговцы бумагой и упаковкой, автотовары, промышленная химия. Конкретные бренды не назывались</td></tr>
         </tbody>
       </table>
       </div>
-      <p class="foot"><b>Итого ~2720 тыс. м² за три месяца.</b> Из 27 объектов шесть маркетплейсы не строили, а арендовали: Уткина Заводь у МЛП, Чехов у MLP, Чишмы в субаренду у Сберлогистики, Южные Врата напрямую у собственника, Чапаевск у структуры РФПИ. Плюс логопарк «Колпино» «Логистеры», где маркетплейсы вообще не фигурируют.<br>
+      <p class="foot"><b>Итого ~2776 тыс. м² за три месяца.</b> Из 28 объектов семь маркетплейсы не строили, а арендовали: Уткина Заводь у МЛП, Чехов у MLP, Чишмы в субаренду у Сберлогистики, Южные Врата напрямую у собственника, Чапаевск у структуры РФПИ. Плюс логопарк «Колпино» «Логистеры», где маркетплейсы вообще не фигурируют.<br>
 <b>Уткина Заводь — не про один Wildberries.</b> Это терминал МЛП из пяти корпусов на 210 тыс. м², где WB арендовал лишь 18 тыс. с 2018 года. Помимо него площади снимают <b>X5, «Петрович», «Строй Метиз», «Альянс 1892» и HOFF</b>. Огонь уничтожил в том числе товары «Петровича»; X5 заявила, что её склад не горел. Официальные сводки на 24 июля давали «более 50 тыс. м²» площади возгорания, отдельные публикации — 15 тыс. по одному корпусу, но по итогу четырёхдневного тушения повреждения охватили <b>около 200 тыс. м²</b> — практически весь терминал. Тушение шло четыре дня, с 24 по 27 июля, с привлечением вертолёта; трое пострадавших средней тяжести. Владелец ООО «МЛП» — Эрисхан Куразов, ранее компания принадлежала кипрским Thynne Investments и «Марсфилд Лимитед», склады группы связывали со структурами Михаила Гуцериева.<br>
 <b>Осторожно с площадями:</b> СМИ часто дают метраж всего логопарка вместо доли арендатора — так было с Уткиной Заводью и с Энемом (Ozon занимает 40 тыс. в комплексе на 91,2 тыс.). Там, где долю выделить не удалось, стоит площадь возгорания.<br>
 <b>Южные Врата — тоже не про один Wildberries.</b> Это крупнейший индустриальный парк России на 650 тыс. м², где WB арендовал 24,6 тыс. напрямую у собственника. Рядом работают <b>FM Logistic, Tablogix, ЛоджиксПро, «Ашан», «Русский Свет» (32 тыс. м²) и «Лоджистик Форс ДВ»</b>. Парк атаковали дважды: 20 июля — первый удар с крупным пожаром, в Домодедовскую больницу тогда доставили шесть человек, включая троих граждан Китая; 16 августа — уничтожены блоки WB. Владелец Radius Group, ранее принадлежал PPF Real Estate с партнёрами, затем продан производителю металлоконструкций «Венталл» за 20–30 млрд ₽.<br>
+<b>Северное Домодедово — фарма и вендинг.</b> 16 августа на территории ПЛК «Северное Домодедово» обрушился корпус на 56 тыс. м², принадлежавший фармацевтической компании; там же полностью сгорел завод <b>AlmaFood</b> — производителя ингредиентов для вендинга, который снабжал сухими сливками, какао и кофе почти все торговые автоматы в стране. Мощность обжарки — до 600 тонн кофе в месяц. Компания заявила о планах перезапуска и стройки нового завода. Помимо основного склада повреждены около 21 объекта: фасады, крыши, стёкла и автомобили; на ликвидации работали 78 человек и 22 единицы техники. Маркетплейсы здесь не при чём — это отдельная промышленно-логистическая площадка.<br>
 <b>Колпино — склад ответственного хранения, а не склад одной компании.</b> «Логистера» принимала, хранила и отгружала товары десятков клиентов, поэтому пострадавшим оказался не один арендатор, а весь пул поклажедателей. Поимённо их не раскрывали: известно лишь, что горели шины, аккумуляторы и ватманы, а среди арендаторов — компании по торговле бумагой и упаковкой, автотоварами и промышленной химией. По тому же адресу работает второй оператор — <b>«Складовик 24»</b>. Маркетплейсы среди пострадавших не заявлены; склад Ozon стоит через дорогу и не пострадал. Пожар: 82 тыс. м² в пике в 3:30, к 15:00 — 20 тыс., к 2 часам ночи 24 августа — 6 тыс.; 200 спасателей и 59 единиц техники, тушение осложняли ветер и отсутствие водоснабжения рядом.<br>
 <b>Рядом, но не склад:</b> во Всеволожском районе после пожара остановил производство упаковочный завод Elopak — оборудование признано невосстановимым. В таблицу не включён, объект не складской.</p>
     </div>
@@ -808,8 +839,8 @@ svg{width:100%;height:auto;display:block}
           <div class="row"><span class="nm">Собственные ФЦ Wildberries</span><span class="ar">15 объектов</span></div>
           <div class="row"><span class="nm">Арендованные маркетплейсами</span><span class="ar">6 объектов</span></div>
           <div class="row"><span class="nm">Собственные объекты Ozon</span><span class="ar">4 объекта</span></div>
-          <div class="row"><span class="nm">Сторонние 3PL-операторы</span><span class="ar">2 объекта</span></div>
-          <div class="row tot"><span class="nm">Всего</span><span class="ar">27</span></div>
+          <div class="row"><span class="nm">Сторонние операторы и промплощадки</span><span class="ar">3 объекта</span></div>
+          <div class="row tot"><span class="nm">Всего</span><span class="ar">28</span></div>
         </div>
         <div class="col">
           <h3>Владельцы арендованных площадок</h3>
@@ -819,10 +850,11 @@ svg{width:100%;height:auto;display:block}
           <div class="row"><span class="nm">Radius Group · Южные Врата <span style="color:var(--mut)">7+ арендаторов</span></span><span class="ar">650 всего</span></div>
           <div class="row"><span class="nm">PNK group → РФПИ · Чапаевск</span><span class="ar">135</span></div>
           <div class="row"><span class="nm">«Логистера» · Колпино <span style="color:var(--mut)">десятки клиентов</span></span><span class="ar">82</span></div>
+          <div class="row"><span class="nm">ПЛК «Северное Домодедово» <span style="color:var(--mut)">фарма + AlmaFood</span></span><span class="ar">56</span></div>
         </div>
         <div class="col">
           <h3>Топ регионов по потерям</h3>
-          <div class="row"><span class="nm">Московская обл.</span><span class="ar">485</span></div>
+          <div class="row"><span class="nm">Московская обл.</span><span class="ar">541</span></div>
           <div class="row"><span class="nm">Тульская обл.</span><span class="ar">300</span></div>
           <div class="row"><span class="nm">Самарская обл.</span><span class="ar">263</span></div>
           <div class="row"><span class="nm">Санкт-Петербург</span><span class="ar">188</span></div>
@@ -837,9 +869,9 @@ svg{width:100%;height:auto;display:block}
           <div class="row"><span class="nm">25–31 июля</span><span class="ar">322</span></div>
           <div class="row"><span class="nm">1–7 августа</span><span class="ar">623</span></div>
           <div class="row"><span class="nm">8–14 августа</span><span class="ar">271</span></div>
-          <div class="row"><span class="nm">15–21 августа</span><span class="ar">225</span></div>
+          <div class="row"><span class="nm">15–21 августа</span><span class="ar">281</span></div>
           <div class="row"><span class="nm">22–25 августа</span><span class="ar">352</span></div>
-          <div class="row tot"><span class="nm">Итого</span><span class="ar">~2720</span></div>
+          <div class="row tot"><span class="nm">Итого</span><span class="ar">~2776</span></div>
         </div>
       </div>
       <p class="foot">До 18 июля 2026 ударов по складской недвижимости маркетплейсов не фиксировалось — весь объём потерь уложился в пять недель с 18 июля по 25 августа. Первый месяц кампании пришёлся исключительно на Wildberries, Ozon попал под удары только 22 августа.</p>
@@ -1251,6 +1283,90 @@ d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(f
   svg.append("text").attr("x",W/2).attr("y",H/2).attr("text-anchor","middle").attr("fill","var(--mut)").attr("font-size","14")
      .text("Карта границ не загрузилась — откройте страницу онлайн (на хостинге работает).");
 });
+})();
+</script>
+<script>
+var DMG=[
+["Электросталь","Электросталь, Московская обл.",55.79,38.47,250,"wb",0,"WB, собственный ФЦ · 18.07"],
+["Алексин","Алексин, Тульская обл.",54.51,37.07,300,"wb",0,"WB, собственный ФЦ · 05.08 · крупнейшая потеря"],
+["МЛП «Уткина Заводь»","д. Новосаратовка, Ленинградская обл.",59.85,30.55,200,"wb",1,"Собственник ООО «МЛП» (Э. Куразов). Арендаторы: WB 18 тыс., X5, «Петрович», «Строй Метиз», «Альянс 1892», HOFF · 24.07 · терминал 210 тыс."],
+["Коледино","Подольск, Московская обл.",55.36,37.55,200,"wb",0,"WB, флагманский ФЦ · 16.08"],
+["Чишмы","Чишмы, Башкортостан",54.57,55.37,180,"wb",1,"Собственник Сберлогистика, субаренда WB · 11.08 · уничтожен"],
+["Владимир","Владимир, Владимирская обл.",56.13,40.42,175,"wb",0,"WB, собственный ФЦ · 03.08"],
+["Рязань","Рязань, Рязанская обл.",54.63,39.71,170,"wb",0,"WB, собственный ФЦ · 29.07"],
+["Чапаевск","Чапаевск, Самарская обл.",52.98,49.70,135,"oz",1,"Построен PNK group, выкуплен структурой РФПИ, аренда Ozon · 22.08 · комплекс 135 тыс., хранение 76 тыс."],
+["Самара","Самара, Самарская обл.",53.20,50.15,128,"wb",0,"WB, собственный ФЦ · 02.08"],
+["Котовск","Котовск, Тамбовская обл.",52.59,41.50,108,"wb",0,"WB, собственный ФЦ · 18.07 · погибли 7 человек"],
+["Шушары","Санкт-Петербург",59.79,30.40,106,"wb",0,"WB, собственный ФЦ · 24.07"],
+["Краснодар · WB","Краснодар, Краснодарский край",45.08,38.98,100,"wb",0,"WB, собственный ФЦ · 22.07"],
+["Невинномысск · WB","Невинномысск, Ставропольский край",44.63,41.94,94,"wb",0,"WB, собственный ФЦ · 22.07"],
+["Воронеж · WB","Воронеж, Воронежская обл.",51.62,39.25,91,"wb",0,"WB, собственный ФЦ · 11.08 · выбыло 91 из 156"],
+["Пенза","Пенза, Пензенская обл.",53.19,45.00,90,"wb",0,"WB, собственный ФЦ · 30.07"],
+["Логопарк «Колпино»","Колпинское ш. 135, Санкт-Петербург",59.72,30.58,82,"ot",1,"«Логистера» — ответственное хранение, товары десятков клиентов. По адресу также «Складовик 24» · 23.08 · горели шины, аккумуляторы, бумага"],
+["ПЛК «Северное Домодедово»","Домодедово, Московская обл.",55.40,37.79,56,"ot",1,"Обрушение корпуса фармкомпании; полностью сгорел завод AlmaFood — ингредиенты для вендинга · 16.08 · повреждено ещё ~21 объект"],
+["Махачкала","Кумторкалинский р-н, Дагестан",43.13,47.28,55,"oz",0,"Ozon, крупнейший ЛЦ СКФО · 24.08 · введено 55 из 128"],
+["Сарапул","Сарапул, Удмуртия",56.47,53.80,53,"wb",0,"WB, собственный ФЦ · 30.07"],
+["Волгоград · WB","Волгоград, Волгоградская обл.",48.72,44.42,48,"wb",0,"WB, собственный ФЦ · 31.07"],
+["Оренбург","Оренбург, Оренбургская обл.",51.77,55.10,40,"oz",0,"Ozon, ОЭЗ «Оренбуржье» · 23.08 · работа остановлена"],
+["Энем","Тахтамукайский р-н, Адыгея",44.93,38.91,40,"oz",0,"Ozon · 24.08 · введено 40 из 120, комплекс 91,2 тыс."],
+["ИП «Южные Врата»","мкр. Белые Столбы, Домодедово",55.35,37.85,24.6,"wb",1,"Собственник Radius Group (ранее PPF Real Estate, продан «Венталлу»). Арендаторы: WB 24,6 тыс., FM Logistic, Tablogix, ЛоджиксПро, «Ашан», «Русский Свет», «Лоджистик Форс ДВ» · атаки 20.07 и 16.08 · парк 650 тыс."],
+["Красный Бор","Тосненский р-н, Ленинградская обл.",59.60,30.85,20,"wb",0,"WB, собственный ФЦ · 04.08 · минус 1 блок из 154, работает"],
+["Екатеринбург · WB","Екатеринбург, Свердловская обл.",56.80,60.70,20,"wb",0,"WB, собственный ФЦ · 07.08 · минус 1 блок из 230, работает"],
+["УНИКС","Подольск, Московская обл.",55.42,37.53,10.5,"wb",0,"Сторонний логокомплекс · 28.07 · уничтожен полностью"],
+["Чехов","Чехов, Московская обл.",55.14,37.45,8,"wb",1,"Собственник MLP, аренда WB · 04.08 · площадь не раскрыта"],
+["Краснодар · Ozon","ст. Елизаветинская, Краснодар",45.09,38.85,8,"oz",0,"Ozon · 24.08 · крупный пожар, работа приостановлена, площадь не раскрыта"]
+];
+function initDamageMap(){
+  if(typeof L==="undefined"){var el=document.getElementById("dmap");
+    if(el)el.innerHTML='<div style="padding:24px;font-size:13px;color:#8a8272">Не удалось загрузить библиотеку карт Leaflet — проверьте доступ к unpkg.com.</div>';
+    return;}
+  var COL={wb:"#C1483F",oz:"#2C5FB8",ot:"#7A6BA8"};
+  var B=[[42,19],[62,137]];
+  var map=L.map("dmap",{scrollWheelZoom:true,worldCopyJump:false});
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+    {attribution:"&copy; OpenStreetMap contributors &copy; CARTO",subdomains:"abcd",maxZoom:14}).addTo(map);
+  map.setView([57,60],3);
+  var layer=L.layerGroup().addTo(map), marks=[];
+  var rad=function(a){return 4+1.5*Math.sqrt(a);};
+  DMG.slice().sort(function(x,y){return y[4]-x[4];}).forEach(function(d){
+    var m=L.circleMarker([d[2],d[3]],{radius:rad(d[4]),fillColor:d[6]?"#D98324":COL[d[5]],
+      fillOpacity:.82,color:"#fff",weight:1.8});
+    var ar=(d[4]<=8&&/не раскрыта/.test(d[7]))?"площадь не раскрыта":(String(d[4]).replace(".",",")+" тыс. м²");
+    m.bindTooltip("<b>"+d[0]+"</b> · "+d[1]+"<br>"+ar,{className:"dtip",direction:"top",offset:[0,-6]});
+    m.bindPopup("<b>"+d[0]+"</b><div style='color:#6b6a66'>"+d[1]+"</div>"+
+      "<div style='margin-top:5px'><b>Потеряно:</b> "+ar+"</div>"+
+      "<div style='margin-top:5px'>"+d[7]+"</div>");
+    m._g=d[5]; m._m=d[6]; marks.push(m); layer.addLayer(m);
+  });
+  var cnt=document.getElementById("dcount");
+  var LAB={all:"все объекты",wb:"площадки Wildberries",oz:"объекты Ozon",
+           ot:"прочие операторы",multi:"объекты в аренде у стороннего владельца"};
+  function apply(f){
+    layer.clearLayers(); var n=0;
+    marks.forEach(function(m){
+      var v=(f==="all")||(f==="multi"?m._m===1:m._g===f);
+      if(v){layer.addLayer(m);n++;}
+    });
+    if(cnt)cnt.textContent="Показано: "+n+" — "+LAB[f];
+  }
+  var fb=document.getElementById("dfilters");
+  if(fb)fb.addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;
+    [].forEach.call(fb.children,function(x){x.classList.remove("on")});b.classList.add("on");apply(b.dataset.f);});
+  apply("all");
+  function refit(){map.invalidateSize(true);map.fitBounds(B);}
+  refit(); setTimeout(refit,80); setTimeout(refit,400);
+  return refit;
+}
+/* Ленивая инициализация: контейнер #dmap лежит в скрытой вкладке, поэтому
+   до первого показа Leaflet считает его размер нулевым и точки уезжают за кадр. */
+(function(){
+  var made=null;
+  var tb=document.getElementById("tabs");
+  if(!tb) return;
+  tb.addEventListener("click",function(e){
+    var b=e.target.closest("button"); if(!b||b.dataset.v!=="damage") return;
+    setTimeout(function(){ if(!made){ made=initDamageMap()||function(){}; } else { made(); } },60);
+  });
 })();
 </script>
 </body>
