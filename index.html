@@ -23,7 +23,15 @@ h1{font-size:25px;font-weight:600;margin:0 0 4px;letter-spacing:-.2px}
   color:var(--mut);border-bottom:2px solid transparent;margin-bottom:-1px;transition:.12s}
 .tabs button:hover{color:var(--ink)}
 .tabs button.on{color:var(--ink);border-bottom-color:var(--ink)}
-#view-ozon{display:none}
+#view-ozon,#view-damage{display:none}
+table.dmg{border-collapse:collapse;width:100%;font-size:13.5px}
+table.dmg th,table.dmg td{padding:7px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+table.dmg th{font-size:12px;color:var(--mut);font-weight:600;background:#f6f6f4;position:sticky;top:0}
+table.dmg td.num,table.dmg th.num{text-align:right;white-space:nowrap}
+table.dmg tr.grp td{background:#f2f2ef;font-weight:600;font-size:12.5px;color:var(--ink)}
+table.dmg tr.rent td{background:#fdf7f0}
+table.dmg tr.multi td{background:#fdf0f0;box-shadow:inset 3px 0 0 var(--red)}
+table.dmg tbody tr:not(.grp):hover{background:#eef3fb}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px 17px}
 .kpi .l{font-size:12px;color:var(--mut);margin-bottom:5px}
 .kpi .v{font-size:22px;font-weight:600;letter-spacing:-.3px}
@@ -65,6 +73,7 @@ svg{width:100%;height:auto;display:block}
   <div class="tabs" id="tabs">
     <button data-v="wb" class="on">Wildberries</button>
     <button data-v="ozon">Ozon</button>
+    <button data-v="damage">Повреждённые склады</button>
   </div>
 
   <div id="view-wb">
@@ -714,6 +723,129 @@ svg{width:100%;height:auto;display:block}
       <p class="foot">Сети сопоставимы по площади, но WB под ударами с 18 июля и потерял ~40% мощностей, а Ozon попал под атаки только 22 августа — семь эпизодов за три дня, пять складов остановлено (~270 тыс. м²). У Ozon 56 площадок и мельче средний объект (медиана раскрытых площадей ≈ 60 тыс. м²), у WB — крупные хабы по 150–300 тыс. м², что сделало сеть уязвимее к точечным ударам. Второе отличие — прозрачность: WB публикует карту складов с адресами, Ozon не раскрывает ни адреса РФЦ, ни площади, поэтому по нему удалось собрать 3,0 из 5 млн м² против почти полного покрытия у WB.</p>
     </div>
   </div>
+<div id="view-damage">
+    <div class="kpis">
+      <div class="kpi"><div class="l">Повреждено за 3 месяца</div><div class="v" style="color:var(--red)">~2,72 <small>млн м² · 27 объектов</small></div></div>
+      <div class="kpi"><div class="l">Wildberries · с 18.07</div><div class="v" style="color:var(--red)">~2368 <small>тыс. м² · 21 объект</small></div></div>
+      <div class="kpi"><div class="l">Ozon · с 22.08</div><div class="v" style="color:var(--red)">~270 <small>тыс. м² · 5 объектов</small></div></div>
+      <div class="kpi"><div class="l">Прочие операторы</div><div class="v" style="color:var(--red)">82 <small>тыс. м² · 1 объект</small></div></div>
+      <div class="kpi"><div class="l">В аренде у стороннего владельца</div><div class="v">6 <small>из 27 · мультиарендных 3</small></div></div>
+    </div>
+
+    <div class="card">
+      <h2>Все повреждённые склады — 25 мая по 25 августа 2026</h2>
+      <p style="font-size:13px;color:var(--mut);margin:0 0 12px">Хронология ударов БПЛА по складской недвижимости. «Площадь» — потерянная или выведенная из строя, для частичных потерь в формате «выбыло / всего по объекту». Столбец «Собственник» показывает, чей это объект: маркетплейс построил его сам или снимает у девелопера.</p>
+      <div style="overflow-x:auto">
+      <table class="dmg">
+        <thead><tr><th>№</th><th>Дата</th><th>Объект</th><th>Город</th><th>Регион</th><th class="num">Площадь</th><th>Собственник / арендатор</th></tr></thead>
+        <tbody>
+          <tr class="grp"><td colspan="7">Wildberries и площадки, где WB был одним из арендаторов — 21 объект</td></tr>
+          <tr><td>1</td><td>18.07</td><td>Электросталь</td><td>Электросталь</td><td>Московская обл.</td><td class="num">250</td><td>WB, собственный ФЦ</td></tr>
+          <tr><td>2</td><td>18.07</td><td>Котовск</td><td>Котовск</td><td>Тамбовская обл.</td><td class="num">108</td><td>WB, собственный ФЦ</td></tr>
+          <tr><td>3</td><td>22.07</td><td>Краснодар</td><td>Краснодар</td><td>Краснодарский край</td><td class="num">100</td><td>WB, собственный ФЦ</td></tr>
+          <tr><td>4</td><td>22.07</td><td>Невинномысск</td><td>Невинномысск</td><td>Ставропольский край</td><td class="num">94</td><td>WB, собственный ФЦ</td></tr>
+          <tr><td>5</td><td>24.07</td><td>Шушары</td><td>Санкт-Петербург</td><td>Санкт-Петербург</td><td class="num">106</td><td>WB, собственный ФЦ</td></tr>
+          <tr class="rent multi"><td>6</td><td>24.07</td><td>МЛП «Уткина Заводь» · д. Новосаратовка</td><td>Всеволожский р-н</td><td>Ленинградская обл.</td><td class="num">~200 / 210</td><td><b>ООО «МЛП»</b> (Эрисхан Куразов, ранее связывали со структурами Гуцериева) — 5 корпусов класса А. <b>Арендаторы: Wildberries (18 тыс. с 2018), X5, «Петрович», «Строй Метиз», «Альянс 1892», HOFF</b>. Сгорели в том числе товары «Петровича»; X5 пожар на своём складе опровергла</td></tr>
+          <tr class="rent"><td>7</td><td>28.07</td><td>УНИКС</td><td>Подольск</td><td>Московская обл.</td><td class="num">10,5</td><td>сторонний логокомплекс, уничтожен полностью</td></tr>
+          <tr><td>8</td><td>29.07</td><td>Рязань</td><td>Рязань</td><td>Рязанская обл.</td><td class="num">170</td><td>WB, собственный ФЦ</td></tr>
+          <tr><td>9</td><td>30.07</td><td>Пенза</td><td>Пенза</td><td>Пензенская обл.</td><td class="num">90</td><td>WB, собственный ФЦ</td></tr>
+          <tr><td>10</td><td>30.07</td><td>Сарапул</td><td>Сарапул</td><td>Удмуртия</td><td class="num">53</td><td>WB, собственный ФЦ</td></tr>
+          <tr><td>11</td><td>31.07</td><td>Волгоград</td><td>Волгоград</td><td>Волгоградская обл.</td><td class="num">48</td><td>WB, собственный ФЦ</td></tr>
+          <tr><td>12</td><td>02.08</td><td>Самара</td><td>Самара</td><td>Самарская обл.</td><td class="num">128</td><td>WB, собственный ФЦ</td></tr>
+          <tr><td>13</td><td>03.08</td><td>Владимир</td><td>Владимир</td><td>Владимирская обл.</td><td class="num">175</td><td>WB, собственный ФЦ</td></tr>
+          <tr><td>14</td><td>04.08</td><td>Красный Бор · 1 блок</td><td>Тосненский р-н</td><td>Ленинградская обл.</td><td class="num">20 / 154</td><td>WB, собственный ФЦ · работает дальше</td></tr>
+          <tr class="rent"><td>15</td><td>04.08</td><td>Чехов</td><td>Чехов</td><td>Московская обл.</td><td class="num">н/д</td><td><b>MLP</b> — аренда</td></tr>
+          <tr><td>16</td><td>05.08</td><td>Алексин</td><td>Алексин</td><td>Тульская обл.</td><td class="num">300</td><td>WB, собственный ФЦ · крупнейшая потеря</td></tr>
+          <tr><td>17</td><td>07.08</td><td>Екатеринбург · 1 блок</td><td>Екатеринбург</td><td>Свердловская обл.</td><td class="num">20 / 230</td><td>WB, собственный ФЦ · работает дальше</td></tr>
+          <tr><td>18</td><td>11.08</td><td>Воронеж</td><td>Воронеж</td><td>Воронежская обл.</td><td class="num">91 / 156</td><td>WB, собственный ФЦ · работает дальше</td></tr>
+          <tr class="rent"><td>19</td><td>11.08</td><td>Чишмы</td><td>Чишмы</td><td>Башкортостан</td><td class="num">180</td><td><b>Сберлогистика</b> — субаренда WB, уничтожен</td></tr>
+          <tr><td>20</td><td>16.08</td><td>Коледино · блоки WB</td><td>Подольск</td><td>Московская обл.</td><td class="num">200</td><td>WB, флагманский ФЦ</td></tr>
+          <tr class="rent multi"><td>21</td><td>20.07 и 16.08</td><td>ИП «Южные Врата» · мкр. Белые Столбы</td><td>Домодедово</td><td>Московская обл.</td><td class="num">24,6 / 650</td><td><b>Radius Group</b> (ранее PPF Real Estate, продан «Венталлу» за 20–30 млрд ₽) — крупнейший индустриальный парк России, корпуса класса А 2012 года. <b>Арендаторы: Wildberries (24,6 тыс., прямая аренда), FM Logistic, Tablogix, ЛоджиксПро, «Ашан», «Русский Свет» (32 тыс.), «Лоджистик Форс ДВ»</b>. Две атаки: 20.07 и 16.08</td></tr>
+
+          <tr class="grp"><td colspan="7">Ozon — 5 объектов, ~270 тыс. м²</td></tr>
+          <tr class="rent"><td>22</td><td>22.08</td><td>Чапаевск</td><td>Чапаевск</td><td>Самарская обл.</td><td class="num">135</td><td><b>PNK group</b> построил, выкуплен структурой <b>РФПИ</b> — аренда Ozon</td></tr>
+          <tr><td>23</td><td>23.08</td><td>Оренбург</td><td>Оренбург</td><td>Оренбургская обл.</td><td class="num">40 / 80</td><td>ОЭЗ «Оренбуржье», Ozon</td></tr>
+          <tr><td>24</td><td>24.08</td><td>Краснодар · Елизаветинская</td><td>Краснодар</td><td>Краснодарский край</td><td class="num">н/д</td><td>Ozon</td></tr>
+          <tr><td>25</td><td>24.08</td><td>Махачкала · Алмало</td><td>Кумторкалинский р-н</td><td>Дагестан</td><td class="num">55 / 128</td><td>Ozon, крупнейший ЛЦ СКФО</td></tr>
+          <tr><td>26</td><td>24.08</td><td>Энем</td><td>Тахтамукайский р-н</td><td>Адыгея</td><td class="num">40 / 120</td><td>Ozon, комплекс 91,2 тыс. м²</td></tr>
+
+          <tr class="grp"><td colspan="7">Прочие логистические операторы — 1 объект, 82 тыс. м²</td></tr>
+          <tr class="rent multi"><td>27</td><td>23.08</td><td>Логопарк «Колпино» · Колпинское ш., 135</td><td>Санкт-Петербург</td><td>Санкт-Петербург</td><td class="num">82</td><td><b>«Логистера»</b> — склад ответственного хранения, товары <b>десятков клиентов</b>. По адресу также <b>«Складовик 24»</b>. Горели шины, аккумуляторы, бумага и полимеры; среди арендаторов — торговцы бумагой и упаковкой, автотовары, промышленная химия. Конкретные бренды не назывались</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="foot"><b>Итого ~2720 тыс. м² за три месяца.</b> Из 27 объектов шесть маркетплейсы не строили, а арендовали: Уткина Заводь у МЛП, Чехов у MLP, Чишмы в субаренду у Сберлогистики, Южные Врата напрямую у собственника, Чапаевск у структуры РФПИ. Плюс логопарк «Колпино» «Логистеры», где маркетплейсы вообще не фигурируют.<br>
+<b>Уткина Заводь — не про один Wildberries.</b> Это терминал МЛП из пяти корпусов на 210 тыс. м², где WB арендовал лишь 18 тыс. с 2018 года. Помимо него площади снимают <b>X5, «Петрович», «Строй Метиз», «Альянс 1892» и HOFF</b>. Огонь уничтожил в том числе товары «Петровича»; X5 заявила, что её склад не горел. Официальные сводки на 24 июля давали «более 50 тыс. м²» площади возгорания, отдельные публикации — 15 тыс. по одному корпусу, но по итогу четырёхдневного тушения повреждения охватили <b>около 200 тыс. м²</b> — практически весь терминал. Тушение шло четыре дня, с 24 по 27 июля, с привлечением вертолёта; трое пострадавших средней тяжести. Владелец ООО «МЛП» — Эрисхан Куразов, ранее компания принадлежала кипрским Thynne Investments и «Марсфилд Лимитед», склады группы связывали со структурами Михаила Гуцериева.<br>
+<b>Осторожно с площадями:</b> СМИ часто дают метраж всего логопарка вместо доли арендатора — так было с Уткиной Заводью и с Энемом (Ozon занимает 40 тыс. в комплексе на 91,2 тыс.). Там, где долю выделить не удалось, стоит площадь возгорания.<br>
+<b>Южные Врата — тоже не про один Wildberries.</b> Это крупнейший индустриальный парк России на 650 тыс. м², где WB арендовал 24,6 тыс. напрямую у собственника. Рядом работают <b>FM Logistic, Tablogix, ЛоджиксПро, «Ашан», «Русский Свет» (32 тыс. м²) и «Лоджистик Форс ДВ»</b>. Парк атаковали дважды: 20 июля — первый удар с крупным пожаром, в Домодедовскую больницу тогда доставили шесть человек, включая троих граждан Китая; 16 августа — уничтожены блоки WB. Владелец Radius Group, ранее принадлежал PPF Real Estate с партнёрами, затем продан производителю металлоконструкций «Венталл» за 20–30 млрд ₽.<br>
+<b>Колпино — склад ответственного хранения, а не склад одной компании.</b> «Логистера» принимала, хранила и отгружала товары десятков клиентов, поэтому пострадавшим оказался не один арендатор, а весь пул поклажедателей. Поимённо их не раскрывали: известно лишь, что горели шины, аккумуляторы и ватманы, а среди арендаторов — компании по торговле бумагой и упаковкой, автотоварами и промышленной химией. По тому же адресу работает второй оператор — <b>«Складовик 24»</b>. Маркетплейсы среди пострадавших не заявлены; склад Ozon стоит через дорогу и не пострадал. Пожар: 82 тыс. м² в пике в 3:30, к 15:00 — 20 тыс., к 2 часам ночи 24 августа — 6 тыс.; 200 спасателей и 59 единиц техники, тушение осложняли ветер и отсутствие водоснабжения рядом.<br>
+<b>Рядом, но не склад:</b> во Всеволожском районе после пожара остановил производство упаковочный завод Elopak — оборудование признано невосстановимым. В таблицу не включён, объект не складской.</p>
+    </div>
+
+    <div class="card">
+      <h2>Атакованы, но уцелели — по объектам</h2>
+      <p style="font-size:13px;color:var(--mut);margin:0 0 12px">Объекты под ударами, которые сохранили здание и товар либо продолжили работу. В общий счёт потерь не входят.</p>
+      <div class="cols" style="grid-template-columns:1fr 1fr">
+        <div class="col">
+          <h3>Wildberries</h3>
+          <div class="row"><span class="nm"><b>Казань (Зеленодольск)</b><br><span style="color:var(--mut)">23.07, 31.07, 05.08 — три атаки, разрушений нет, работает штатно</span></span><span class="ar">100</span></div>
+          <div class="row"><span class="nm"><b>Тверь (Эммаус)</b><br><span style="color:var(--mut)">04.08 обломки пробили стену, 06.08 повторный удар. Работа не останавливалась</span></span><span class="ar">152</span></div>
+        </div>
+        <div class="col">
+          <h3>Ozon</h3>
+          <div class="row"><span class="nm"><b>Адыгейск</b> (Теучежский р-н)<br><span style="color:var(--mut)">24.08 — эвакуация, здание и товар целы. Логопарк «Ромекс-Теучежский», отдельная площадка от Энема</span></span><span class="ar">107</span></div>
+          <div class="row"><span class="nm"><b>Невинномысск</b><br><span style="color:var(--mut)">24.08 — эвакуация, здание и товар целы</span></span><span class="ar">92</span></div>
+        </div>
+      </div>
+      <p class="foot">Для полноты: у WB частичные потери на Красном Бору, в Екатеринбурге и Воронеже — объекты продолжают работать, выбывшие блоки учтены в таблице выше.</p>
+    </div>
+
+    <div class="card">
+      <h2>Разбор по владельцам и регионам</h2>
+      <div class="cols">
+        <div class="col">
+          <h3>Кому принадлежали объекты</h3>
+          <div class="row"><span class="nm">Собственные ФЦ Wildberries</span><span class="ar">15 объектов</span></div>
+          <div class="row"><span class="nm">Арендованные маркетплейсами</span><span class="ar">6 объектов</span></div>
+          <div class="row"><span class="nm">Собственные объекты Ozon</span><span class="ar">4 объекта</span></div>
+          <div class="row"><span class="nm">Сторонние 3PL-операторы</span><span class="ar">2 объекта</span></div>
+          <div class="row tot"><span class="nm">Всего</span><span class="ar">27</span></div>
+        </div>
+        <div class="col">
+          <h3>Владельцы арендованных площадок</h3>
+          <div class="row"><span class="nm">МЛП · Уткина Заводь <span style="color:var(--mut)">6 арендаторов</span></span><span class="ar">210 всего</span></div>
+          <div class="row"><span class="nm">MLP · Чехов</span><span class="ar">н/д</span></div>
+          <div class="row"><span class="nm">Сберлогистика · Чишмы</span><span class="ar">180</span></div>
+          <div class="row"><span class="nm">Radius Group · Южные Врата <span style="color:var(--mut)">7+ арендаторов</span></span><span class="ar">650 всего</span></div>
+          <div class="row"><span class="nm">PNK group → РФПИ · Чапаевск</span><span class="ar">135</span></div>
+          <div class="row"><span class="nm">«Логистера» · Колпино <span style="color:var(--mut)">десятки клиентов</span></span><span class="ar">82</span></div>
+        </div>
+        <div class="col">
+          <h3>Топ регионов по потерям</h3>
+          <div class="row"><span class="nm">Московская обл.</span><span class="ar">485</span></div>
+          <div class="row"><span class="nm">Тульская обл.</span><span class="ar">300</span></div>
+          <div class="row"><span class="nm">Самарская обл.</span><span class="ar">263</span></div>
+          <div class="row"><span class="nm">Санкт-Петербург</span><span class="ar">188</span></div>
+          <div class="row"><span class="nm">Ленинградская обл.</span><span class="ar">220</span></div>
+          <div class="row"><span class="nm">Башкортостан</span><span class="ar">180</span></div>
+          <div class="row"><span class="nm">Владимирская обл.</span><span class="ar">175</span></div>
+          <div class="row"><span class="nm">Рязанская обл.</span><span class="ar">170</span></div>
+        </div>
+        <div class="col">
+          <h3>Хронология по неделям</h3>
+          <div class="row"><span class="nm">18–24 июля</span><span class="ar">858</span></div>
+          <div class="row"><span class="nm">25–31 июля</span><span class="ar">322</span></div>
+          <div class="row"><span class="nm">1–7 августа</span><span class="ar">623</span></div>
+          <div class="row"><span class="nm">8–14 августа</span><span class="ar">271</span></div>
+          <div class="row"><span class="nm">15–21 августа</span><span class="ar">225</span></div>
+          <div class="row"><span class="nm">22–25 августа</span><span class="ar">352</span></div>
+          <div class="row tot"><span class="nm">Итого</span><span class="ar">~2720</span></div>
+        </div>
+      </div>
+      <p class="foot">До 18 июля 2026 ударов по складской недвижимости маркетплейсов не фиксировалось — весь объём потерь уложился в пять недель с 18 июля по 25 августа. Первый месяц кампании пришёлся исключительно на Wildberries, Ozon попал под удары только 22 августа.</p>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -726,9 +858,11 @@ svg{width:100%;height:auto;display:block}
     var v=b.dataset.v;
     document.getElementById("view-wb").style.display=(v==="wb")?"block":"none";
     document.getElementById("view-ozon").style.display=(v==="ozon")?"block":"none";
+    document.getElementById("view-damage").style.display=(v==="damage")?"block":"none";
     document.getElementById("pageTitle").textContent=(v==="wb")
       ? "Склады Wildberries — логистическая сеть"
-      : "Склады Ozon — логистическая сеть";
+      : (v==="ozon") ? "Склады Ozon — логистическая сеть"
+      : "Повреждённые склады — сводка за три месяца";
   });
 })();
 </script>
