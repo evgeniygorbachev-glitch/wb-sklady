@@ -1391,8 +1391,6 @@ function initDamageMap(){
     scrollWheelZoom:true,
     zoomSnap:0,            // не прилипать к целым уровням
     zoomDelta:0.7,         // шаг кнопок +/- и двойного клика
-    wheelPxPerZoomLevel:110, // чем больше, тем медленнее реакция на колесо
-    wheelDebounceTime:8,
     zoomAnimation:true,
     fadeAnimation:true,
     markerZoomAnimation:true,
@@ -1415,6 +1413,30 @@ function initDamageMap(){
       {attribution:"&copy; OpenStreetMap contributors",maxZoom:14}).addTo(map);
   });
   map.setView([57,60],3);
+  /* Свой зум колесом вместо штатного. Тачпад шлёт поток мелких событий,
+     а Leaflet на каждое запускает анимацию и тут же гасит её следующим —
+     накопленный зум теряется, жест ощущается вязким. Здесь дельта копится
+     до кадра и применяется разом, без анимации, с якорем под курсором. */
+  map.scrollWheelZoom.disable();
+  (function(){
+    var acc=0, pt=null, raf=0;
+    function apply(){
+      raf=0; var z=map.getZoom()+acc; acc=0;
+      z=Math.max(map.getMinZoom(),Math.min(map.getMaxZoom(),z));
+      map.setZoomAround(pt,z,{animate:false});
+    }
+    map.getContainer().addEventListener("wheel",function(e){
+      e.preventDefault();
+      var d=e.deltaY;
+      if(e.deltaMode===1) d*=20;        // прокрутка строками
+      else if(e.deltaMode===2) d*=100;  // страницами
+      // ctrlKey — это щипок на тачпаде, ему нужен более крупный шаг;
+      // крупная дельта (>=50) — щелчок обычного колеса мыши
+      var step=e.ctrlKey?d/25:(Math.abs(d)>=50?d/200:d/90);
+      acc-=step; pt=map.mouseEventToContainerPoint(e);
+      if(!raf) raf=requestAnimationFrame(apply);
+    },{passive:false});
+  })();
   var layer=L.layerGroup().addTo(map), marks=[];
   /* Единая шкала со картами Wildberries и Ozon: r = 3,6 + 0,5·√площадь.
      У тех карт SVG 960 px растянут до ~1000 px, поэтому берём тот же
